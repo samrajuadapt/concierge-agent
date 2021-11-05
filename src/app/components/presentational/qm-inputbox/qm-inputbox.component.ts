@@ -22,21 +22,21 @@ import { FLOW_TYPE } from 'src/util/flow-state';
 })
 export class QmInputboxComponent implements OnInit {
   @Input() flowType: FLOW_TYPE;
-  customerCreateForm:FormGroup;
-  countrycode:string;
-  dobRequired:boolean;
+  customerCreateForm: FormGroup;
+  countrycode: string;
+  dobRequired: boolean;
   editCustomer: ICustomer;
   editCustomer$: Observable<ICustomer>;
   userDirection$: Observable<string>;
-  isButtonPressed:boolean=false;
+  isButtonPressed: boolean = false;
   customers: ICustomer[];
   customers$: Observable<ICustomer[]>
-  private subscriptions : Subscription = new Subscription();
-  countryCodeNumber:string;
-  day:number;
+  private subscriptions: Subscription = new Subscription();
+  countryCodeNumber: string;
+  day: number;
   controls: any;
-  currentCustomer:ICustomer
-  editMode:boolean;
+  currentCustomer: ICustomer
+  editMode: boolean;
   isExpanded = false;
   isLangExpanded = false;
   dateError = {
@@ -44,15 +44,15 @@ export class QmInputboxComponent implements OnInit {
     month: ''
   };
   public isLanguageSelectEnabled: boolean = true;
-  public dobOrder = { month : 0, day : 1 , year : 2};
+  public dobOrder = { month: 0, day: 1, year: 2 };
   public languages: NgOption[] = [];
   uttParameters$: Observable<IUTTParameter>;
   languages$: Observable<ILanguage[]>;
   supportedLanguagesArray: ILanguage[];
-  
+
   @Output()
   onFlowNext: EventEmitter<any> = new EventEmitter();
-  
+
   date = {
     day: '',
     month: '',
@@ -62,7 +62,7 @@ export class QmInputboxComponent implements OnInit {
   isMonthFocus = false;
   isLanguageFocus = false;
 
-  firstName:string
+  firstName: string
 
   private dateLabelKeys: string[] = [
     'calendar.month.none',
@@ -80,16 +80,16 @@ export class QmInputboxComponent implements OnInit {
     'calendar.month.december'
   ];
 
-  
+
   public months: NgOption[];
 
   constructor(
     private servicePointSelectors: ServicePointSelectors,
-    public autoCloseService:AutoClose,
-    private userSelectors:UserSelectors,
-    private fb:FormBuilder,
-    private customerDispatchers:CustomerDispatchers,
-    private customerSelectors:CustomerSelector,
+    public autoCloseService: AutoClose,
+    private userSelectors: UserSelectors,
+    private fb: FormBuilder,
+    private customerDispatchers: CustomerDispatchers,
+    private customerSelectors: CustomerSelector,
     private util: Util,
     private translateService: TranslateService,
     public LanguageSelectors: LanguageSelectors,
@@ -99,26 +99,26 @@ export class QmInputboxComponent implements OnInit {
     // this.editCustomer$ = this.customerSelectors.editCustomer$;
     this.userDirection$ = this.userSelectors.userDirection$;
     this.languages$ = this.LanguageSelectors.languages$;
-   }
+  }
 
   ngOnInit() {
     // get country code
     const servicePointsSubscription = this.servicePointSelectors.uttParameters$.subscribe((params) => {
-      if(params){
-      this.countrycode = params.countryCode;
-      this.isLanguageSelectEnabled = params.notificationLanguage;     
-      this.dobRequired = params.birthdateRequired;
-      this.isLanguageSelectEnabled = params.notificationLanguage;
-      if (this.isLanguageSelectEnabled) {
-        this.languageDispatchers.fetchLanguages();
-      }    
-    }
+      if (params) {
+        this.countrycode = params.countryCode;
+        this.isLanguageSelectEnabled = params.notificationLanguage;
+        this.dobRequired = params.birthdateRequired;
+        this.isLanguageSelectEnabled = params.notificationLanguage;
+        if (this.isLanguageSelectEnabled) {
+          this.languageDispatchers.fetchLanguages();
+        }
+      }
     });
     this.subscriptions.add(servicePointsSubscription);
 
     const systemInfoDateSubscription = this.systemInfoSelectors.dateConvention$.subscribe(
       (val: string) => {
-        if(val){
+        if (val) {
           var objArr = val.split('-');
           if (objArr.length !== 3) {
             objArr = val.split('/');
@@ -127,30 +127,30 @@ export class QmInputboxComponent implements OnInit {
           this.dobOrder.month = objArr.indexOf('MM');
           this.dobOrder.year = objArr.indexOf('YY');
         }
-        
+
       }
     );
     this.subscriptions.add(systemInfoDateSubscription);
-    
+
     // patch values if current customer available
     const CurrentcustomerSubscription = this.customerSelectors.currentCustomer$.subscribe((customer) => {
       this.currentCustomer = customer;
-      if(this.currentCustomer){
-        
-          const dob: any = this.currentCustomer.properties.dateOfBirth;
-          const dobDate = new Date(dob);
-          this.date = this.formatDate(
-            dobDate.getDate(),
-            dobDate.getMonth(),
-            dobDate.getFullYear()
-          );
-        
+      if (this.currentCustomer) {
+
+        const dob: any = this.currentCustomer.properties.dateOfBirth;
+        const dobDate = new Date(dob);
+        this.date = this.formatDate(
+          dobDate.getDate(),
+          dobDate.getMonth(),
+          dobDate.getFullYear()
+        );
+
 
         this.customerCreateForm.patchValue({
           firstName: this.currentCustomer.firstName,
-          lastName:this.currentCustomer.lastName,
-          phone:this.currentCustomer.properties.phoneNumber,
-          email:this.currentCustomer.properties.email,
+          lastName: this.currentCustomer.lastName,
+          phone: this.currentCustomer.properties.phoneNumber,
+          email: this.currentCustomer.properties.email,
           dateOfBirth: {
             month: this.date.month ? this.date.month : null,
             day: this.date.day ? this.date.day : '',
@@ -158,13 +158,13 @@ export class QmInputboxComponent implements OnInit {
           },
           language: this.currentCustomer.properties.lang
         })
-      }else if((this.customerCreateForm!==undefined) && !this.currentCustomer  ){
-        
+      } else if ((this.customerCreateForm !== undefined) && !this.currentCustomer) {
+
         this.customerCreateForm.patchValue({
           firstName: '',
-          lastName:'',
-          phone:this.countrycode,
-          email:'',
+          lastName: '',
+          phone: this.countrycode,
+          email: '',
           dateOfBirth: {
             month: null,
             day: '',
@@ -176,14 +176,14 @@ export class QmInputboxComponent implements OnInit {
     });
     this.subscriptions.add(CurrentcustomerSubscription);
 
-    
 
-    const editModeSubscription = this.customerSelectors.editCustomerMode$.subscribe((status)=>{
+
+    const editModeSubscription = this.customerSelectors.editCustomerMode$.subscribe((status) => {
       this.editMode = status;
     })
     this.subscriptions.add(editModeSubscription);
 
-    
+
     // Validators
     const today = new Date();
     const phoneValidators = this.util.phoneNoValidator();
@@ -199,15 +199,15 @@ export class QmInputboxComponent implements OnInit {
     //subscribe customer List 
     const customerSubscription = this.customerSelectors.customer$.subscribe((customer) => this.customers = customer);
     this.subscriptions.add(customerSubscription);
-    
+
     this.customers$ = this.customerSelectors.customer$;
-       
+
     // Customer creation form
     this.customerCreateForm = new FormGroup({
-      firstName: new FormControl('',Validators.required, whiteSpaceValidator),
-      lastName:new FormControl('',Validators.required, whiteSpaceValidator),
-      phone:new FormControl(this.countrycode, phoneValidators),
-      email:new FormControl('',emailValidators),
+      firstName: new FormControl('', Validators.required, whiteSpaceValidator),
+      lastName: new FormControl('', Validators.required, whiteSpaceValidator),
+      phone: new FormControl(this.countrycode, phoneValidators),
+      email: new FormControl('', emailValidators),
       dateOfBirth: this.fb.group(
         {
           month: [null, monthValidators],
@@ -218,88 +218,88 @@ export class QmInputboxComponent implements OnInit {
           validator: this.isValidDOBEntered.bind(this)
         }
       ),
-      language:new FormControl(''),
+      language: new FormControl(''),
     })
 
-    
- 
+
+
     // Add month names to an array
     const translateSubscription = this.translateService
-    .get(this.dateLabelKeys)
-    .subscribe((dateLabels: string[]) => {
-      this.months = [
-        { value: '', label: dateLabels['calendar.month.none'] },
-        { value: '01', label: dateLabels['calendar.month.january'] },
-        { value: '02', label: dateLabels['calendar.month.february'] },
-        { value: '03', label: dateLabels['calendar.month.march'] },
-        { value: '04', label: dateLabels['calendar.month.april'] },
-        { value: '05', label: dateLabels['calendar.month.may'] },
-        { value: '06', label: dateLabels['calendar.month.june'] },
-        { value: '07', label: dateLabels['calendar.month.july'] },
-        { value: '08', label: dateLabels['calendar.month.august'] },
-        { value: '09', label: dateLabels['calendar.month.september'] },
-        { value: '10', label: dateLabels['calendar.month.october'] },
-        { value: '11', label: dateLabels['calendar.month.november'] },
-        { value: '12', label: dateLabels['calendar.month.december'] }
-      ];
-    });
+      .get(this.dateLabelKeys)
+      .subscribe((dateLabels: string[]) => {
+        this.months = [
+          { value: '', label: dateLabels['calendar.month.none'] },
+          { value: '01', label: dateLabels['calendar.month.january'] },
+          { value: '02', label: dateLabels['calendar.month.february'] },
+          { value: '03', label: dateLabels['calendar.month.march'] },
+          { value: '04', label: dateLabels['calendar.month.april'] },
+          { value: '05', label: dateLabels['calendar.month.may'] },
+          { value: '06', label: dateLabels['calendar.month.june'] },
+          { value: '07', label: dateLabels['calendar.month.july'] },
+          { value: '08', label: dateLabels['calendar.month.august'] },
+          { value: '09', label: dateLabels['calendar.month.september'] },
+          { value: '10', label: dateLabels['calendar.month.october'] },
+          { value: '11', label: dateLabels['calendar.month.november'] },
+          { value: '12', label: dateLabels['calendar.month.december'] }
+        ];
+      });
 
     this.subscriptions.add(translateSubscription);
 
     // Add customer status place country code
-    if(this.countrycode && !this.currentCustomer){
-        this.customerCreateForm.patchValue({
-          phone:this.countrycode
-        })
-      }
-       else if(this.countrycode && this.currentCustomer && !this.editCustomer.properties.phoneNumber){
-        this.customerCreateForm.patchValue({
-          phone:this.countrycode
-        })
-      }
-
-      let languagesSubscription = this.languages$.subscribe((languages) => {
-        this.supportedLanguagesArray = languages;
-        if (this.supportedLanguagesArray && (this.languages.length !== languages.length)) {
-          this.supportedLanguagesArray = this.supportedLanguagesArray.filter(lang => lang.key !== 'defaultLanguage');
-          this.languages = this.supportedLanguagesArray
-            .map(language => ({
-              value: language.key,
-              label: language.value
-            }));
-          const langChangeSubscription = this.translateService
-                .get('label.language.defaultlanguage')
-                .subscribe(
-                  (languageText: string) => {
-                    this.languages.unshift({ value: '', label: languageText })
-                  }
-                ).unsubscribe();
-      
-          this.subscriptions.add(langChangeSubscription);
-        }
-        if (languages === null) {
-          const langChangeSubscription = this.translateService
-                .get('label.language.defaultlanguage')
-                .subscribe(
-                  (languageText: string) => {
-                    this.languages.unshift({ value: '', label: languageText })
-                  }
-                ).unsubscribe();
-        }
+    if (this.countrycode && !this.currentCustomer) {
+      this.customerCreateForm.patchValue({
+        phone: this.countrycode
       })
-      this.subscriptions.add(languagesSubscription);
+    }
+    else if (this.countrycode && this.currentCustomer && !this.editCustomer.properties.phoneNumber) {
+      this.customerCreateForm.patchValue({
+        phone: this.countrycode
+      })
+    }
+
+    let languagesSubscription = this.languages$.subscribe((languages) => {
+      this.supportedLanguagesArray = languages;
+      if (this.supportedLanguagesArray && (this.languages.length !== languages.length)) {
+        this.supportedLanguagesArray = this.supportedLanguagesArray.filter(lang => lang.key !== 'defaultLanguage');
+        this.languages = this.supportedLanguagesArray
+          .map(language => ({
+            value: language.key,
+            label: language.value
+          }));
+        const langChangeSubscription = this.translateService
+          .get('label.language.defaultlanguage')
+          .subscribe(
+            (languageText: string) => {
+              this.languages.unshift({ value: '', label: languageText })
+            }
+          ).unsubscribe();
+
+        this.subscriptions.add(langChangeSubscription);
+      }
+      if (languages === null) {
+        const langChangeSubscription = this.translateService
+          .get('label.language.defaultlanguage')
+          .subscribe(
+            (languageText: string) => {
+              this.languages.unshift({ value: '', label: languageText })
+            }
+          ).unsubscribe();
+      }
+    })
+    this.subscriptions.add(languagesSubscription);
   }
-  
-  clearCustomerForm(){
-    if(this.customerCreateForm!==undefined){ 
+
+  clearCustomerForm() {
+    if (this.customerCreateForm !== undefined) {
       this.customerCreateForm.markAsPristine();
       this.customerCreateForm.controls.dateOfBirth.markAsPristine();
-      
+
       this.customerCreateForm.patchValue({
         firstName: '',
-        lastName:'',
-        phone:this.countrycode,
-        email:'',
+        lastName: '',
+        phone: this.countrycode,
+        email: '',
         dateOfBirth: {
           month: null,
           day: '',
@@ -307,33 +307,33 @@ export class QmInputboxComponent implements OnInit {
         },
         language: ''
       });
-     
+
 
     }
   }
 
   public accept() {
-    if(this.customerCreateForm.valid){
-      if(this.currentCustomer){
+    if (this.customerCreateForm.valid) {
+      if (this.currentCustomer) {
         this.customerDispatchers.updateCustomer(this.preparedCustomer());
         this.customerDispatchers.selectCustomer(this.preparedCustomer());
         this.customerDispatchers.editCustomerMode(false);
-      }else{
+      } else {
         this.customerDispatchers.createCustomer(this.trimCustomer());
       }
-      }     
-      this.customerCreateForm.markAsPristine() 
     }
+    this.customerCreateForm.markAsPristine()
+  }
 
   // When customer edit and do not chage (add btn) 
-  public next(){
+  public next() {
     this.customerDispatchers.editCustomerMode(false);
     this.customerCreateForm.markAsPristine()
   }
-  
 
-  trimCustomer():ICustomer{
-    if(this.customerCreateForm.value.phone== this.countrycode){
+
+  trimCustomer(): ICustomer {
+    if (this.customerCreateForm.value.phone == this.countrycode) {
       this.customerCreateForm.value.phone = "";
     }
     const customerSave: ICustomer = {
@@ -341,52 +341,65 @@ export class QmInputboxComponent implements OnInit {
       lastName: this.customerCreateForm.value.lastName.trim(),
       properties: this.customerCreateForm.value.language
         ? {
-            phoneNumber: this.customerCreateForm.value.phone.trim(),
-            email: this.customerCreateForm.value.email.trim(),
-            dateOfBirth: this.getDateOfBirth(),
-            lang: this.customerCreateForm.value.language,
-          }
+          phoneNumber: this.customerCreateForm.value.phone.trim(),
+          email: this.customerCreateForm.value.email.trim(),
+          dateOfBirth: this.getDateOfBirth(),
+          lang: this.customerCreateForm.value.language,
+        }
         : {
-            phoneNumber: this.customerCreateForm.value.phone.trim(),
-            email: this.customerCreateForm.value.email.trim(),
-            dateOfBirth: this.getDateOfBirth(),
-          }
+          phoneNumber: this.customerCreateForm.value.phone.trim(),
+          email: this.customerCreateForm.value.email.trim(),
+          dateOfBirth: this.getDateOfBirth(),
+        }
     };
     return customerSave
   }
 
 
-  preparedCustomer():ICustomer{
-    
-    if(this.currentCustomer){
+  preparedCustomer(): ICustomer {
+
+    if (this.currentCustomer) {
       this.editCustomer = this.currentCustomer;
-      const customerToSave : ICustomer = {
+      const customerToSave: ICustomer = {
         ...this.editCustomer,
         ...this.trimCustomer(),
-        id:this.editCustomer.id
+        id: this.editCustomer.id
       }
       return customerToSave
-    }else{
-      const customerToSave : ICustomer = {
+    } else {
+      const customerToSave: ICustomer = {
         ...this.trimCustomer()
       }
       return customerToSave
     }
-      
+
   }
- 
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-  
+
   Donothing(event) {
     event.stopPropagation();
   }
   // Date of Birth validation
   isValidDOBEntered(control: FormGroup) {
     if (control.value) {
+
+      if (control.value.year && control.value.day && control.value.month) {
+
+        if ( new Date() < new Date(control.value.year, parseInt(control.value.month, 10) - 1, control.value.day )) {
+          control.controls['month'].setErrors({ 'futureDate': true });
+          control.controls['day'].setErrors({ 'max': true });
+          control.controls['year'].setErrors({ 'futureDate': true });
+        } else {
+          control.controls['month'].setErrors(null);
+          control.controls['day'].setErrors(null);
+          control.controls['year'].setErrors(null);
+        }    
+      } 
       if (control.value.year && control.value.day && !control.value.month) {
-        control.controls['month'].setErrors({'incorrect': true});
+        control.controls['month'].setErrors({ 'incorrect': true });
       } else {
         control.controls['month'].setErrors(null);
       }
@@ -396,9 +409,9 @@ export class QmInputboxComponent implements OnInit {
         control.controls['day'].setValidators(tempDayValidators);
         control.value.day = control.value.day.toString().trim();
         if (control.value.day && parseInt(control.value.day, 10) > lastDay) {
-          control.controls['day'].setErrors({'max': true});
+          control.controls['day'].setErrors({ 'max': true });
         } else if ((control.value.day && parseInt(control.value.day) <= 0) || !control.value.day || !control.value.day.match(/^[0-9]*$/)) {
-          control.controls['day'].setErrors({'min': true});
+          control.controls['day'].setErrors({ 'min': true });
         } else if (control.value.day && parseInt(control.value.day, 10) <= lastDay) {
           control.controls['day'].setErrors(null);
         }
@@ -413,14 +426,14 @@ export class QmInputboxComponent implements OnInit {
       }
     }
   }
-// restric input feild of birth date and year to numbers
+  // restric input feild of birth date and year to numbers
   restrictNumbers($event) {
     const pattern = /[0-9]/;
     const inputChar = String.fromCharCode($event.charCode);
 
     if (!pattern.test(inputChar)) {
       $event.target.value = $event.target.value.replace(/[^0-9\+\s]/g, '');
-      this.customerCreateForm.patchValue({ phone: $event.target.value})
+      this.customerCreateForm.patchValue({ phone: $event.target.value })
     }
   }
 
@@ -439,7 +452,7 @@ export class QmInputboxComponent implements OnInit {
       if (intMonth < 10) {
         newMonth = '0' + intMonth;
       } else {
-        newMonth  = intMonth.toString();
+        newMonth = intMonth.toString();
       }
     }
 
@@ -476,12 +489,12 @@ export class QmInputboxComponent implements OnInit {
   }
 
 
-  cancel(){
+  cancel() {
     this.customerDispatchers.resetCurrentCustomer();
     this.customerDispatchers.editCustomerMode(false);
   }
 
-  update(){
+  update() {
     if (
       this.customerCreateForm.valid &&
       (this.currentCustomer.firstName != this.customerCreateForm.value.firstName ||
@@ -493,7 +506,7 @@ export class QmInputboxComponent implements OnInit {
         (this.date.day && this.date.day != this.customerCreateForm.value.dateOfBirth.day) ||
         (!this.date.day && this.customerCreateForm.value.dateOfBirth.year) ||
         this.date.month != this.customerCreateForm.value.dateOfBirth.month) ||
-        this.currentCustomer.properties.lang != this.customerCreateForm.value.language
+      this.currentCustomer.properties.lang != this.customerCreateForm.value.language
     ) {
       this.accept();
     } else if (this.customerCreateForm.valid && this.customerCreateForm.dirty) {
@@ -501,14 +514,14 @@ export class QmInputboxComponent implements OnInit {
       this.customerCreateForm.markAsPristine();
     }
   }
-  discard(){
+  discard() {
     this.onFlowNext.emit();
-    this.customerCreateForm.markAsPristine() 
+    this.customerCreateForm.markAsPristine()
     this.customerCreateForm.patchValue({
       firstName: this.currentCustomer.firstName,
-      lastName:this.currentCustomer.lastName,
-      phone:this.currentCustomer.properties.phoneNumber,
-      email:this.currentCustomer.properties.email,
+      lastName: this.currentCustomer.lastName,
+      phone: this.currentCustomer.properties.phoneNumber,
+      email: this.currentCustomer.properties.email,
       dateOfBirth: {
         month: this.date.month ? this.date.month : null,
         day: this.date.day ? this.date.day : '',
@@ -518,21 +531,21 @@ export class QmInputboxComponent implements OnInit {
 
   }
 
-  clearInputFeild(name){
+  clearInputFeild(name) {
     this.customerCreateForm.markAsDirty();
-   switch(name){
-     
-     case "firstName": this.customerCreateForm.patchValue({ firstName: ''});break;
-     case "lastName": this.customerCreateForm.patchValue({ lastName: ''});break;
-     case "phone": this.customerCreateForm.patchValue({ phone: ''});break;
-     case "email": this.customerCreateForm.patchValue({ email: ''});break;
-                        
-   }
+    switch (name) {
+
+      case "firstName": this.customerCreateForm.patchValue({ firstName: '' }); break;
+      case "lastName": this.customerCreateForm.patchValue({ lastName: '' }); break;
+      case "phone": this.customerCreateForm.patchValue({ phone: '' }); break;
+      case "email": this.customerCreateForm.patchValue({ email: '' }); break;
+
+    }
   }
-  ScrollToBottom(){
+  ScrollToBottom() {
     var searchBox = document.getElementById("birthday_select");
     searchBox.scrollIntoView();
-    
+
   }
   DropDownStatus(value: boolean) {
     this.isExpanded = value;
@@ -540,8 +553,8 @@ export class QmInputboxComponent implements OnInit {
   LangDropDownStatus(value: boolean) {
     this.isLangExpanded = value;
   }
-  
-  clearDob(){
+
+  clearDob() {
     this.customerCreateForm.patchValue({
       dateOfBirth: {
         month: null,
@@ -549,7 +562,7 @@ export class QmInputboxComponent implements OnInit {
         year: ''
       }
     })
-    if(this.currentCustomer) {
+    if (this.currentCustomer) {
       this.customerCreateForm.get("dateOfBirth").markAsDirty();
     } else {
       this.customerCreateForm.get("dateOfBirth").markAsPristine();

@@ -204,7 +204,7 @@
             </div>
             <div class="qm-dob__error-message qm-form-error-message" id="year-error" aria-live="assertive"
               aria-atomic="true">
-              <span *ngIf="customerCreateForm.get('dateOfBirth').get('year')?.hasError('max')">
+              <span *ngIf="customerCreateForm.get('dateOfBirth').get('year')?.hasError('futureDate')">
                 {{ 'error.form.dob.incompleteYear' | translate }}
               </span>
             </div>
