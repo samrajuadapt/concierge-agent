@@ -81,7 +81,7 @@
 
 <unit           name = "Concierge"
     frameworkVersion = "2"
-         unitVersion = "7.0.15"
+         unitVersion = "7.0.16"
                 type = "SERVICE_POINT"
       defaultNoUnits = "1"
           maxNoUnits = "1"
