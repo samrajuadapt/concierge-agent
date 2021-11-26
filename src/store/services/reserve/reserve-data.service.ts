@@ -13,16 +13,38 @@ import {
 
 import { IAppointment } from '../../../models/IAppointment';
 import { SystemInfoSelectors } from '../system-info';
+import { ICalendarService } from '../../../models/ICalendarService';
+import { ServicePointSelectors } from '../../../store/services/service-point/service-point.selectors';
 
 
 @Injectable()
 export class ReserveDataService {
   hostAddress: string;
+  private duplicateServices: boolean;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private http: HttpClient, private errorHandler: GlobalErrorHandler, private systemInfoSelector: SystemInfoSelectors) {
+  constructor(private http: HttpClient, 
+    private errorHandler: GlobalErrorHandler, 
+    private systemInfoSelector: SystemInfoSelectors,
+    private servicePointSelectors: ServicePointSelectors) {
+
     const hostSubscription = this.systemInfoSelector.centralHostAddress$.subscribe((info) => this.hostAddress = info);
     this.subscriptions.add(hostSubscription);
+
+    
+    const uttSubscription = this.servicePointSelectors.uttParameters$.subscribe(
+      uttParameters => {
+        if (uttParameters) {
+          this.duplicateServices = uttParameters.duplicateServices;
+        }
+      }
+    );
+    this.subscriptions.add(uttSubscription);
+
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   reserveAppointment(
@@ -56,16 +78,6 @@ export class ReserveDataService {
     appointment: IAppointment
   ): Observable<IAppointment> {
 
-    let services = 
-    appointment.services.map(x => Object.assign({}, x));
-    services = services.map((service)=> {
-      delete service.adult;
-      delete service.showMoreActionsMostFrequent
-      delete service.showMoreActions
-      delete service.child;
-      return service
-    })
-
     let serviceViseVisitors = 
     appointment.services.map(x => Object.assign({}, x));
     serviceViseVisitors = serviceViseVisitors.map((service)=> {
@@ -77,6 +89,27 @@ export class ReserveDataService {
       return service
     })
 
+    if (this.duplicateServices) {
+      var modifiedServices:ICalendarService[] = appointment.services.map(x => Object.assign({}, x));;
+      for (var service of appointment.services) {
+        if (service.adult + service.child > 1) {
+          for (let i = 1; i < service.adult + service.child; i++) { 
+            modifiedServices.push(service);
+          }
+        }
+      }
+      appointment.services = modifiedServices;
+    }
+
+    let services = 
+    appointment.services.map(x => Object.assign({}, x));
+    services = services.map((service)=> {
+      delete service.adult;
+      delete service.showMoreActionsMostFrequent
+      delete service.showMoreActions
+      delete service.child;
+      return service
+    })
 
     let Customparameters = {"services":services, "custom": `{\"peopleServices\": ${JSON.stringify(serviceViseVisitors)}`}
     return this.http

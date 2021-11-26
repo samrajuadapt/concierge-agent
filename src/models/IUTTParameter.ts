@@ -61,6 +61,7 @@ export interface IUTTParameter {
     primaryResource: boolean;
     secondaryResource: boolean;
     servicewiseCustomers: boolean;
+    duplicateServices: boolean;
     maxAdults: number;
     maxChildren: number;
   }

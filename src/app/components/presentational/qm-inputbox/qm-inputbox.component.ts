@@ -384,47 +384,39 @@ export class QmInputboxComponent implements OnInit {
   }
   // Date of Birth validation
   isValidDOBEntered(control: FormGroup) {
+    let errors = null;
     if (control.value) {
 
-      if (control.value.year && control.value.day && control.value.month) {
-
-        if ( new Date() < new Date(control.value.year, parseInt(control.value.month, 10) - 1, control.value.day )) {
-          control.controls['month'].setErrors({ 'futureDate': true });
-          control.controls['day'].setErrors({ 'max': true });
-          control.controls['year'].setErrors({ 'futureDate': true });
-        } else {
-          control.controls['month'].setErrors(null);
-          control.controls['day'].setErrors(null);
-          control.controls['year'].setErrors(null);
-        }    
-      } 
-      if (control.value.year && control.value.day && !control.value.month) {
-        control.controls['month'].setErrors({ 'incorrect': true });
-      } else {
-        control.controls['month'].setErrors(null);
-      }
-      if (control.value.year && control.value.month) {
-        const lastDay = new Date(control.value.year, control.value.month, 0).getDate();
-        const tempDayValidators = [Validators.maxLength(2), Validators.max(lastDay), Validators.min(1), this.util.numberValidator()];
-        control.controls['day'].setValidators(tempDayValidators);
-        control.value.day = control.value.day.toString().trim();
-        if (control.value.day && parseInt(control.value.day, 10) > lastDay) {
-          control.controls['day'].setErrors({ 'max': true });
-        } else if ((control.value.day && parseInt(control.value.day) <= 0) || !control.value.day || !control.value.day.match(/^[0-9]*$/)) {
-          control.controls['day'].setErrors({ 'min': true });
-        } else if (control.value.day && parseInt(control.value.day, 10) <= lastDay) {
-          control.controls['day'].setErrors(null);
+    
+      // invalid date check for leap year
+      if (control.value.year && control.value.month && control.value.day) {
+        const d = new Date(
+          control.value.year,
+          parseInt(control.value.month, 10) - 1,
+          control.value.day
+        );
+        if (new Date() < d) {
+          errors = { ...errors, futureDate: true };
         }
 
-        const selectedMonth = this.months.find(function (item) {
-          return item.value === control.value.month;
+        if (d && d.getMonth() + 1 !== parseInt(control.value.month, 10)) {
+          control.setErrors({
+            invalidDay: true
+          });
+          errors = { ...errors, invalidDay: true };
+        }
+      } else if (
+        control.value.year ||
+        control.value.month ||
+        control.value.day
+      ) {
+        control.setErrors({
+          incompleteDay: true
         });
-        this.dateError = {
-          days: lastDay.toString(),
-          month: selectedMonth.label
-        };
+        errors = { ...errors, incompleteDob: true };
       }
     }
+    return errors;
   }
   // restric input feild of birth date and year to numbers
   restrictNumbers($event) {

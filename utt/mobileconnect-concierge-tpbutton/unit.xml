@@ -35,14 +35,16 @@
  
     Version history in descending order:
     ====================================
-    Version    Date         Comments                                                                Signature
+    Version    Date         Comments                                                               Signature
     =========================================================================================================
-    7.0.16     2021-11-26   Changed send SMS default value to false                                  basama
+    7.0.17     2021-11-26   Changed send SMS default value to false                                  basama
     =========================================================================================================
-    7.0.15     2021-09-24   Added parameters for servicewise customers and max numeber               udaban
+    7.0.16     2021-11-19    Added parameters for duplicate services                                udaban
+    =========================================================================================================
+    7.0.15     2021-09-24   Added parameters for servicewise customers and max numeber              udaban
                             of adults and children
    =========================================================================================================
-    7.0.14     2021-07-30   Added parameters to show primary and secondary resources                 chamut
+    7.0.14     2021-07-30   Added parameters to show primary and secondary resources                chamut
     =========================================================================================================
     7.0.13     2021-06-01   Added parameter to make DOB mandotory                                   basama
     =========================================================================================================
@@ -81,7 +83,7 @@
 
 <unit           name = "Concierge_Button"
     frameworkVersion = "2"
-         unitVersion = "7.0.16"
+         unitVersion = "7.0.17"
                 type = "SERVICE_POINT"
       defaultNoUnits = "1"
           maxNoUnits = "1"
@@ -476,7 +478,14 @@
               sortOrder = "386"
              writeLevel = "profile"
               privilege = "install:adminAdmin"/>
-
+    <parameter name = "duplicateServices"
+                   type = "Boolean"
+           defaultValue = "false"
+                  label = "Duplicate services"
+            description = "Services will be duplicated according to the number of customers.This parameter will get applied only if 'Allow multiple people per service' parameter is enabled."
+              sortOrder = "386"
+             writeLevel = "profile"
+              privilege = "install:adminAdmin"/>
         <parameter name = "maxAdults"
               sortOrder = "387"
                    type = "Integer"

@@ -198,41 +198,42 @@
             <div class="qm-dob__error-message qm-form-error-message" id="year-error" aria-live="assertive"
               aria-atomic="true">
               <span
-                *ngIf="customerCreateForm.get('dateOfBirth').get('year')?.hasError('minlength') || customerCreateForm.get('dateOfBirth').get('year')?.hasError('pattern')">
+              *ngIf="customerCreateForm.controls['dateOfBirth'].controls['year']?.hasError('minlength') || customerCreateForm.controls['dateOfBirth'].controls['year']?.hasError('pattern')">
                 {{ 'error.form.dob.invalidYear' | translate }}
               </span>
             </div>
             <div class="qm-dob__error-message qm-form-error-message" id="year-error" aria-live="assertive"
               aria-atomic="true">
-              <span *ngIf="customerCreateForm.get('dateOfBirth').get('year')?.hasError('futureDate')">
+              <span  *ngIf="customerCreateForm.controls['dateOfBirth'].controls['year']?.hasError('max') ||
+              customerCreateForm.controls['dateOfBirth'].hasError('futureDate') ">
                 {{ 'error.form.dob.incompleteYear' | translate }}
               </span>
             </div>
-            <div class="qm-dob__error-message qm-form-error-message" id="day-error" aria-live="assertive"
+            <!-- <div class="qm-dob__error-message qm-form-error-message" id="day-error" aria-live="assertive"
               aria-atomic="true">
               <span
                 *ngIf="customerCreateForm.get('dateOfBirth')?.get('day')?.hasError('max') && customerCreateForm.get('dateOfBirth').get('month').value && customerCreateForm.get('dateOfBirth').get('year').value">
                 {{ 'error.form.dob.incompleteDay' | translate : dateError }}
               </span>
-            </div>
+            </div> -->
             <div class="qm-dob__error-message qm-form-error-message" id="day-error" aria-live="assertive"
               aria-atomic="true">
               <span
-                *ngIf="customerCreateForm.get('dateOfBirth').get('day')?.hasError('min') || customerCreateForm.get('dateOfBirth').get('day')?.hasError('pattern') || (customerCreateForm.get('dateOfBirth')?.get('day')?.hasError('max') && customerCreateForm.get('dateOfBirth')?.get('day').value && (!(customerCreateForm.get('dateOfBirth').get('month').value) || !(customerCreateForm.get('dateOfBirth').get('year').value)))">
+              *ngIf="customerCreateForm.controls['dateOfBirth']?.errors?.invalidDay">
                 {{ 'error.form.dob.invalidDay' | translate }}
               </span>
             </div>
             <div class="qm-dob__error-message qm-form-error-message" id="day-error" aria-live="assertive"
               aria-atomic="true">
               <span
-                *ngIf="customerCreateForm.get('dateOfBirth').get('year')?.hasError('min') && !(customerCreateForm.get('dateOfBirth').get('year')?.hasError('minlength'))">
+              *ngIf="customerCreateForm.controls['dateOfBirth'].controls['year']?.hasError('min') && !(customerCreateForm.controls['dateOfBirth'].controls['year']?.hasError('minlength'))">
                 {{ 'error.form.dob.incompleteYearOld' | translate }}
               </span>
             </div>
             <div class="qm-dob__error-message qm-form-error-message" id="month-error" aria-live="assertive"
               aria-atomic="true">
-              <span *ngIf="customerCreateForm.get('dateOfBirth').get('month').hasError('incorrect')">
-                {{ 'error.form.dob.incompleteMonth' | translate }}
+              <span *ngIf="customerCreateForm.controls['dateOfBirth'].hasError('incompleteDob')">
+                {{ 'error.form.dob.incompleteDob' | translate }}
               </span>
             </div>
           </div>
