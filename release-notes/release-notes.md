@@ -43,7 +43,7 @@ This document describes the new features, bug corrections, known issues and reco
 
 **Date: 15/10/2021**
  
-**Build number: 3**
+**Build number: 4**
 
 <h3>Stories</h3>
 
@@ -52,6 +52,7 @@ This document describes the new features, bug corrections, known issues and reco
 | **QP-10574** | **Concierge responsiveness improvements** |
 | **QP-10610** | **Add Custom Information in Concierge** |
 | **QP-10768** | **Concierge Advanced Serach searching for customers** |
+| **QP-11400** | **"send SMS" not checked default** |
 
 <h3>Bug fixes</h3>
 

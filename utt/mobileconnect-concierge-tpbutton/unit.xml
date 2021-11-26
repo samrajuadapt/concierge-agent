@@ -37,6 +37,8 @@
     ====================================
     Version    Date         Comments                                                                Signature
     =========================================================================================================
+    7.0.16     2021-11-26   Changed send SMS default value to false                                  basama
+    =========================================================================================================
     7.0.15     2021-09-24   Added parameters for servicewise customers and max numeber               udaban
                             of adults and children
    =========================================================================================================
@@ -313,7 +315,7 @@
           privilege = "install:adminAdmin"/>
     <parameter name = "sndSMS"
                type = "Boolean"
-       defaultValue = "true"
+       defaultValue = "false"
               label = "Send SMS"
         description = "Enable/disable sms option"
           sortOrder = "367"
