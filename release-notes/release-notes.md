@@ -39,9 +39,9 @@ This document describes the new features, bug corrections, known issues and reco
 ----------
 -->
 
-<h2>Version 4.1.0 - Internal</h2>
+<h2>Version 4.1.0</h2>
 
-**Date: 15/10/2021**
+**Date: 07/12/2021**
  
 **Build number: 4**
 
@@ -65,6 +65,8 @@ This document describes the new features, bug corrections, known issues and reco
 | **QP-10715** | **Artifactory build doesn't write data to MANIFEST.MF.** |
 | **QP-10477** | **WCAG screenreader issues (talkback)** |
 | **QP-10862** | **Handle 401 Unauthorized Error in Concierge** |
+| **QP-11085** | **Future DoB should allowed issue fixed** |
+| **QP-10828** | **Add an option to add the service multiple times if multiple people selected** |
 
 ----------
 
