@@ -25,6 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
   userDirection$: Observable<string>;
+  userLocale$: Observable<string>;
+  
   @ViewChild(ToastContainerDirective, { static: true }) toastContainer: ToastContainerDirective;
 
   constructor(private systemInfoDispatchers: SystemInfoDispatchers, private systemInfoSelectors: SystemInfoSelectors,
@@ -41,7 +43,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.branchDispatchers.fetchBranches();
     this.userStatusDispatchers.fetchUserStatus();
     this.userDirection$ = this.userSelectors.userDirection$;
+    this.userLocale$ = this.userSelectors.userLocale$;
 
+
+    const userLocalSubscription = this.userLocale$.subscribe(locale => {
+      if(locale) {
+        document.documentElement.lang = locale;
+      }
+    });
+    this.subscriptions.add(userLocalSubscription)
     const translateSubscription = this.translateService.get('branch').subscribe(
       (branchLabel: string) => {
         this.branchDispatchers.selectBranch({ id: -1, name: branchLabel });
