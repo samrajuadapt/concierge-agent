@@ -155,6 +155,26 @@ gulp.task('write:manifest', done => {
   done();
 });
 
+// Write to manifest file
+gulp.task('write:config', done => {
+  try {
+    var versionInfo = getVersionInfo();
+    if (versionInfo) {
+      var fileContent = 'app_version = '  + versionInfo.version + '\r\n';
+      fileContent += 'native_loader_enabled = true';
+      fs.writeFileSync('./src/config.properties', fileContent);
+      done();
+      return true;
+    }
+  } catch (ex) {
+    console.log(
+      'There was an exception when trying to write the config.properties - ' + ex
+    );
+    return false;
+  }
+  done();
+});
+
 // Set app version ***************************************
 
 gulp.task('set:appVersion', done => {
