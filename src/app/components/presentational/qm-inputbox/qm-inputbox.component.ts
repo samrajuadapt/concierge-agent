@@ -136,13 +136,11 @@ export class QmInputboxComponent implements OnInit {
     const CurrentcustomerSubscription = this.customerSelectors.currentCustomer$.subscribe((customer) => {
       this.currentCustomer = customer;
       if (this.currentCustomer) {
-
         const dob: any = this.currentCustomer.properties.dateOfBirth;
-        const dobDate = new Date(dob);
         this.date = this.formatDate(
-          dobDate.getDate(),
-          dobDate.getMonth(),
-          dobDate.getFullYear()
+          dob.substring(8,10),
+          parseInt(dob.substring(5,7)) - 1,
+          dob.substring(0,4)
         );
 
 
