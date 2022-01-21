@@ -38,6 +38,20 @@ This document describes the new features, bug corrections, known issues and reco
 
 ----------
 -->
+<h2>Version 4.1.1</h2>
+
+**Date: 07/12/2021**
+ 
+**Build number: 5**
+
+<h3>Bug fixes</h3>
+
+| **Id** | **Release notes** |
+| --- | --- |
+| **QP-11403** | **browser auto translation issue fixed** |
+| **QP-11611** | **Date of birth in edit customer is one day off if browser timezone is -7** |
+
+----------
 
 <h2>Version 4.1.0</h2>
 
