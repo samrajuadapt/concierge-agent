@@ -13,7 +13,8 @@
         <div class="qm-visit-list-header-item-label qm-first-element-header">{{'label.queue.notes' | translate}}</div>
       </div>
       <div role="columnheader" scope="col" class="qm-visit-list-header-item qm-col-4 qm-customer-col qm-flex-grid" (click)="sortByCustomer()">
-        <div class="qm-visit-list-header-item-label">{{'label.name' | translate}}</div>
+        <div *ngIf ="!hideCustomerDetails" class="qm-visit-list-header-item-label">{{'label.name' | translate}}</div>
+        <div *ngIf ="hideCustomerDetails" class="qm-visit-list-header-item-label">{{'label.customerId' | translate}}</div>
         <button class="qm-transparent-btn"><i class="sort-icon" [ngClass]="{'icon-caret-up': sortByCustomerAsc !== true, 'icon-caret-down': sortByCustomerAsc ===  true,'selected-sort-icon':sortingIndicator==='CUSTOMER'  }"></i>
           <span class="sr-only">{{ sortByCustomerAsc ? ('button.sortASC' | translate) : ('button.sortDES' | translate) }}</span>
         </button>
@@ -102,7 +103,7 @@
                 </div>
             </div>
           </span>
-          <span role="cell" (mouseenter)="selectedNoteVisitId = 0" class="qm-col-4 qm-customer-col qm-body-item" [ngClass]="{'qm-selected-visit-font':  infoVisitId === visit.visitId}">{{visit.customerName }}</span>
+          <span role="cell" (mouseenter)="selectedNoteVisitId = 0" class="qm-col-4 qm-customer-col qm-body-item" [ngClass]="{'qm-selected-visit-font':  infoVisitId === visit.visitId}"> <span *ngIf="!hideCustomerDetails">{{visit.customerName }}</span><span *ngIf="hideCustomerDetails && visit.customerIds[0]">{{visit.customerIds[0] }}</span></span>
           <span role="cell" (mouseenter)="selectedNoteVisitId = 0" class="qm-col-4 qm-body-item qm-service-col" [ngClass]="{'qm-display-none':  infoVisitId === visit.visitId}"> {{visit.serviceName }} </span>
           <span *ngIf="getShowPriResource()" role="cell" (mouseenter)="selectedNoteVisitId = 0" class="qm-col-4 qm-body-item qm-pri-res-col" [ngClass]="{'qm-display-none':  infoVisitId === visit.visitId}"> {{ visit?.currentVisitService?.primaryResource?.displayName || '' }} </span>
           <span *ngIf="getShowSecResource()" role="cell" (mouseenter)="selectedNoteVisitId = 0" class="qm-col-4 qm-body-item qm-pri-res-col" [ngClass]="{'qm-display-none':  infoVisitId === visit.visitId}"> {{ (visit.currentVisitService?.secondaryResources && visit.currentVisitService?.secondaryResources[0] && visit.currentVisitService?.secondaryResources[0]?.displayName) || '' }} </span>

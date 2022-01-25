@@ -130,7 +130,7 @@ export class QmIdentifyAppointmentComponent implements OnInit, OnDestroy {
   isQRReaderClose = false;
   qrCodeListnerTimer: any;
   isQrCodeLoaded = false;
-
+  hideCustomerdetails: boolean = false;
 
   // Search States
   readonly SEARCH_STATES = {
@@ -328,7 +328,7 @@ export class QmIdentifyAppointmentComponent implements OnInit, OnDestroy {
 
           this.isPrResourceEnable = uttParameters.primaryResource;
           this.isSecResourceEnable = uttParameters.secondaryResource;
-
+          this.hideCustomerdetails = uttParameters.hideCustomerDetails
         // qr button enable depending on utt settngs
           if (uttParameters.appointmentQR) {
             this.qrButtonVisible = true;
@@ -835,7 +835,9 @@ export class QmIdentifyAppointmentComponent implements OnInit, OnDestroy {
       apps = apps.map(a => {
 
         a.custName = '';
-        if (a.customers[0]) {
+        if (this.hideCustomerdetails) {
+          a.custName = a.customers[0].id.toString();
+        } else if (a.customers[0]) {
           a.custName = `${a.customers[0] ? a.customers[0].firstName : ""} ${a.customers[0] ? a.customers[0].lastName : ""
             }`;
         }

@@ -12,7 +12,7 @@
         <span class="sr-only">{{ 'button.close' | translate }}</span>
     </button>
     <span aria-live="assertive" role="alert">
-        <div class="qm-appointment-info-item qm-appointment-info__birthdate">
+        <div *ngIf="!hideCustomerDetails" class="qm-appointment-info-item qm-appointment-info__birthdate">
             <span class="qm-appointment-info-item__icon icon-cake"></span>
             <span class="qm-appointment-info-item__text" *ngIf="useCalendarEndpoint">
                 {{ (appointmentInfo?.customers[0].dateOfBirth || null) | amDateFormat : systemInformation.dateConvention }}
@@ -21,7 +21,7 @@
                 {{ (appointmentInfo?.customers[0].properties?.dateOfBirth || null ) | amDateFormat : systemInformation.dateConvention }}
             </span>
         </div>
-        <div class="qm-appointment-info-item qm-appointment-info__telephone">
+        <div *ngIf="!hideCustomerDetails" class="qm-appointment-info-item qm-appointment-info__telephone">
             <span class="qm-appointment-info-item__icon icon-phone"></span>
             <span class="qm-appointment-info-item__text" *ngIf="useCalendarEndpoint">
                 {{ appointmentInfo?.customers[0].phone }}
@@ -30,7 +30,7 @@
                 {{ appointmentInfo?.customers[0].properties?.phoneNumber }}
             </span>
         </div>
-        <div class="qm-appointment-info-item qm-appointment-info__email">
+        <div *ngIf="!hideCustomerDetails" class="qm-appointment-info-item qm-appointment-info__email">
             <span class="qm-appointment-info-item__icon icon-mail">
             </span>
             <span class="qm-appointment-info-item__text qm-text-overflow-fix" *ngIf="useCalendarEndpoint">

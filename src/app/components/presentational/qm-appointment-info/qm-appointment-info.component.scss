@@ -135,7 +135,9 @@
 
     @at-root & .qm-appointment-info__customer {
       color: $primary-pink;
-
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       &:hover {
         cursor: pointer;
         color: $dark-transparent82

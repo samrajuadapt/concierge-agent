@@ -46,6 +46,7 @@ export interface IUTTParameter {
     visitQR: boolean;
     webUrl: string;
     hideCustomer: boolean;
+    hideCustomerDetails:boolean;
     saveCustomerOption: string;
     quickServeServices: string;
     quickVisitAction: string;

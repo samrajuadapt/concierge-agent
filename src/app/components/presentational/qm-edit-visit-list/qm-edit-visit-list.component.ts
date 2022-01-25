@@ -56,6 +56,7 @@ export class QmEditVisitListComponent implements OnInit, OnDestroy {
   selectedNoteVisitId: number;
   showPriResource = false;
   showsecResource = false;
+  hideCustomerDetails: boolean = false;
 
   @Output() onFlowNext: EventEmitter<any> = new EventEmitter<any>();
   @Output() NextFlow: EventEmitter<any> = new EventEmitter<any>();
@@ -211,6 +212,7 @@ export class QmEditVisitListComponent implements OnInit, OnDestroy {
           this.countryCode = uttParameters.countryCode;
           this.isPrResourceEnable = uttParameters.primaryResource;
           this.isSecResourceEnable = uttParameters.secondaryResource;
+          this.hideCustomerDetails = uttParameters.hideCustomerDetails;
 
           if (this.canTransferQ == true && (this.canTransferQFirst == true || this.canTransferQLast == true || this.canTransferQWait == true)) {
             this.canTransferQ = true;

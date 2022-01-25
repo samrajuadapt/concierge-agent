@@ -2,14 +2,19 @@
   <!-- summary card for create appointment-->
   <div class="qm-checkout-view__summary" id="main-container" *ngIf="selectedAppointment">
     <div class="visit-details-card">
-    <div  [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)">
-      <div class="custom_header_h2" *ngIf="selectedCustomer">{{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}}</div>
-      <div class="qm-summary-item">
+    <div  [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null"
+     class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" 
+     (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)">
+      <div class="custom_header_h2" *ngIf="selectedCustomer">
+        <span *ngIf="!(hideCustomerdetails)"> {{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}} </span>
+        <span *ngIf="hideCustomerdetails"> {{selectedCustomer.id}} </span>
+      </div>
+      <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
         <span class="qm-summary-item__icon icon-phone"></span>
         <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{ selectedCustomer.properties?.phoneNumber }}</span>
       </div>
 
-      <div class="qm-summary-item">
+      <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
         <span class="qm-summary-item__icon icon-mail"></span>
         <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{ selectedCustomer.properties?.email }}</span>
       </div>
@@ -69,17 +74,14 @@
               <span class="sr-only"> {{ 'addCustomer' | translate }}</span>
             </button>
           </div>
-      <!-- 2 No Add Customer utt disabled-->
-          <!-- <div *ngIf="isCustomerFlowHidden">
-            <h3>{{ 'label.visit.details.heading' | translate }}</h3>
-          </div> -->
       </div>
 
       <!-- 3 if selected customer and utt enabled  -->
       <div tabindex="0"  *ngIf="selectedCustomer || tempCustomer" class="qm-checkout-view__summary-grouping qm-checkout-view__section"  (click)="goToPanel(1)" (keydown.space)="goToPanel(1)" (keydown.enter)="goToPanel(1)" >
-          <div class="custom_header_h2" *ngIf="selectedCustomer">{{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}}</div>
-          <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName"> {{tempCustomer.firstName + ' '}}</span> <span *ngIf="tempCustomer && tempCustomer.lastName">{{tempCustomer.lastName}} </span></div>
-                    
+          <div class="custom_header_h2" *ngIf="selectedCustomer && !hideCustomerdetails">{{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}}</div>
+          <div class="custom_header_h2" *ngIf="selectedCustomer && hideCustomerdetails">{{selectedCustomer.id}}</div>
+          <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName && !hideCustomerdetails"> {{tempCustomer.firstName + ' '}}</span> <span *ngIf="tempCustomer && tempCustomer.lastName">{{tempCustomer.lastName}} </span></div>
+          <span *ngIf="!hideCustomerdetails">                    
           <div class="qm-summary-item" *ngIf="selectedCustomer && selectedCustomer.properties?.phoneNumber"> 
             <span class="qm-summary-item__icon icon-phone"></span>
             <span class="qm-summary-item__text qm-text-overflow-fix">{{ selectedCustomer.properties?.phoneNumber }}</span>
@@ -98,6 +100,7 @@
             <span class="qm-summary-item__icon icon-mail"></span>
             <span class="qm-summary-item__text qm-text-overflow-fix" >{{ tempCustomer.email }}</span>
           </div>
+        </span>
       </div>
 
       <!-- If customer flow is hidden -->

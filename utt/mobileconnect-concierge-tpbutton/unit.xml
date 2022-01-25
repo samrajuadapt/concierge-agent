@@ -37,9 +37,11 @@
     ====================================
     Version    Date         Comments                                                               Signature
     =========================================================================================================
-    7.0.17     2021-11-26   Changed send SMS default value to false                                  basama
+    7.0.18     2022-01-22   Added parameter hide customer details                                   udaban
     =========================================================================================================
-    7.0.16     2021-11-19    Added parameters for duplicate services                                udaban
+    7.0.17     2021-11-26   Changed send SMS default value to false                                 basama
+    =========================================================================================================
+    7.0.16     2021-11-19   Added parameters for duplicate services                                 udaban
     =========================================================================================================
     7.0.15     2021-09-24   Added parameters for servicewise customers and max numeber              udaban
                             of adults and children
@@ -83,7 +85,7 @@
 
 <unit           name = "Concierge_Button"
     frameworkVersion = "2"
-         unitVersion = "7.0.17"
+         unitVersion = "7.0.18"
                 type = "SERVICE_POINT"
       defaultNoUnits = "1"
           maxNoUnits = "1"
@@ -470,6 +472,14 @@
           sortOrder = "385"
          writeLevel = "profile"
           privilege = "install:adminAdmin"/> 
+    <parameter name = "hideCustomerDetails"
+               type = "Boolean"
+       defaultValue = "false"
+              label = "Hide customer details"
+        description = "Show/hide customer details for all flows"
+          sortOrder = "385"
+         writeLevel = "profile"
+          privilege = "install:adminAdmin"/>  
      <parameter name = "servicewiseCustomers"
                    type = "Boolean"
            defaultValue = "false"

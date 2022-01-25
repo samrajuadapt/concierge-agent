@@ -37,6 +37,8 @@
     ====================================
     Version    Date         Comments                                                    Signature
     =============================================================================================
+    7.0.18    2022-01-22    Added parameter hide customer details                       udaban
+    =============================================================================================
     7.0.17    2021-11-26    Changed send SMS default value to false                     basama
     =============================================================================================
     7.0.16     2021-11-19    Added parameters for duplicate services                    udaban
@@ -83,7 +85,7 @@
 
 <unit           name = "Concierge"
     frameworkVersion = "2"
-         unitVersion = "7.0.17"
+         unitVersion = "7.0.18"
                 type = "SERVICE_POINT"
       defaultNoUnits = "1"
           maxNoUnits = "1"
@@ -457,6 +459,14 @@
            defaultValue = "false"
                   label = "Hide Customer field"
             description = "Show/hide number of customers field in create appointment flow"
+              sortOrder = "385"
+             writeLevel = "profile"
+              privilege = "install:adminAdmin"/>  
+        <parameter name = "hideCustomerDetails"
+                   type = "Boolean"
+           defaultValue = "false"
+                  label = "Hide customer details"
+            description = "Show/hide customer details for all flows"
               sortOrder = "385"
              writeLevel = "profile"
               privilege = "install:adminAdmin"/>  

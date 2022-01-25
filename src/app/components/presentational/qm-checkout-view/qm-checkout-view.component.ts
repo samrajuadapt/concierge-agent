@@ -82,7 +82,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   isCreateAppointment: boolean = false;
   isArriveAppointment: boolean = false;
   hideCustomer: boolean = false;
-
+  hideCustomerdetails:boolean = false;
   themeColor: string = "#a9023a";
   whiteColor: string = "#ffffff";
   blackColor: string = "#000000";
@@ -188,6 +188,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
           this.isNoNotificationEnabled = uttParameters.noNotification;
           this.isPrResourceEnable = uttParameters.primaryResource;
           this.isSecResourceEnable = uttParameters.secondaryResource;
+          this.hideCustomerdetails = uttParameters.hideCustomerDetails
         }
       })
       .unsubscribe();
@@ -197,7 +198,6 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     const customerSubscription = this.customerSelector.currentCustomer$
       .subscribe(customer => {
         this.selectedCustomer = customer;
-
         if (customer) {
           this.customerEmail = customer.properties.email;
           this.customerSms = customer.properties.phoneNumber;

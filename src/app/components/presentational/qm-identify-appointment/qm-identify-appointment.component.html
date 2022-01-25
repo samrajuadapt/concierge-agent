@@ -305,8 +305,11 @@
                 <button (click)="sortAppointments('custName')"  role="columnheader"
                   class="qm-table__cell-35 qm-table__cell-xs-35  qm-table__header-customer qm-text-overflow-fix qm-transparent-btn"
                   [ngClass]="{ 'qm-table__cell-20': useCalendarEndpoint }">
-                  <span>
+                  <span *ngIf="!hideCustomerdetails">
                     {{ "list.identifyappointment.heading.name" | translate }}
+                  </span>
+                  <span *ngIf="hideCustomerdetails">
+                    {{ "list.identifyappointment.heading.customer.id" | translate }}
                   </span>
                   <span
                     ><i

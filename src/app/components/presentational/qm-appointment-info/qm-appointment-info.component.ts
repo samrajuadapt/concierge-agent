@@ -21,6 +21,7 @@ export class QmAppointmentInfoComponent implements OnInit, AfterViewInit, OnDest
   // utt
   isPrResourceEnable = false;
   isSecResourceEnable = false;
+  hideCustomerDetails: boolean = false;
 
   @Input()
   appointmentInfo: any = {};
@@ -63,6 +64,7 @@ export class QmAppointmentInfoComponent implements OnInit, AfterViewInit, OnDest
         if (uttParameters) {
           this.isPrResourceEnable = uttParameters.primaryResource;
           this.isSecResourceEnable = uttParameters.secondaryResource;
+          this.hideCustomerDetails = uttParameters.hideCustomerDetails;
         }
       }
     );
