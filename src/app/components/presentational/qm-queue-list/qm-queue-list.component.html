@@ -57,11 +57,11 @@
       <span role="cell"  class="qm-col-15" *ngIf="!queueFetchFailed">
         {{q.customersWaiting }}</span>
       <span role="cell" class="qm-col-15 max-wait-time-container" *ngIf="!queueFetchFailed">
-        <span class="qm-wait-icon-inside-container"><i class="icon-alert-star max-wait-time"
+        <span *ngIf="q.customersWaiting > 0" class="qm-wait-icon-inside-container"><i class="icon-alert-star max-wait-time"
             [ngClass]="{'gray-indicator': queueIndicator.isGrayIndicator(q), 'red-indicator': queueIndicator.isRedIndicator(q), 'yellow-indicator': queueIndicator.isYellowIndicator(q)}"></i></span>
-        <span> {{q.max_w_time }} <span *ngIf="q.max_w_time != '-'">{{'min'|translate}}</span></span>
+        <span> {{ q.customersWaiting > 0 ? q.max_w_time : '-' }} <span *ngIf="q.max_w_time != '-' && q.customersWaiting > 0">{{'min'|translate}}</span></span>
       </span>
-      <span role="cell" *ngIf="showEstWaitTime && !queueFetchFailed" class="qm-col-15">{{ q.est_w_time || '-' }} <span
+      <span role="cell" *ngIf="showEstWaitTime && !queueFetchFailed && q.customersWaiting > 0" class="qm-col-15">{{ q.est_w_time || '-' }} <span
           *ngIf="q.est_w_time != '-'"> {{'min'|translate}}</span></span>
     </div>
 

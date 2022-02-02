@@ -60,11 +60,11 @@
           <div class="qm-flex-grid qm-queue-list-body-row" *ngFor="let q of queueCollection" (click)="selectQueue(q)">
               <div class="qm-col qm-queue-list-body-row-label">{{q.name}}</div>
               <div class="qm-col">{{q.customersWaiting }}</div>
-              <div class="qm-col max-wait-time-container">
+              <div *ngIf="q.customersWaiting > 0" class="qm-col max-wait-time-container">
                 <div><i class="icon-alert-star max-wait-time" [ngClass]="{'gray-indicator': queueIndicator.isGrayIndicator(q), 'red-indicator': queueIndicator.isRedIndicator(q), 'yellow-indicator': queueIndicator.isYellowIndicator(q)}"></i></div>
                 <div> {{q.max_w_time }}</div>
               </div>
-              <div class="qm-col" *ngIf="showEstWaitTime" >{{ q.est_w_time || '-' }}</div>
+              <div class="qm-col" *ngIf="showEstWaitTime && q.customersWaiting > 0" >{{ q.est_w_time || '-' }}</div>
           </div>
         </div>
       </div>
