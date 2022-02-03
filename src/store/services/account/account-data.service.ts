@@ -27,6 +27,9 @@ export class AccountDataService {
         // Remove boolean value(rtl or not) from the local
         res.locale = (res.locale && res.locale.split(':')[0]) || 'en';
         res.direction =  res.direction || 'ltr';
+      //   if (res.direction == "rtl") {
+      //     document.getElementsByTagName("html")[0].setAttribute("dir", "rtl");
+      // }
         return { data: res, userRole };
       }))
       .pipe(catchError(this.errorHandler.handleError()));

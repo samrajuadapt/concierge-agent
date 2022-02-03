@@ -38,7 +38,7 @@ This document describes the new features, bug corrections, known issues and reco
 
 ----------
 -->
-<h2>Version 4.2.0</h2>
+<h2>Version 4.1.2</h2>
 
 **Date: 07/12/2021**
  

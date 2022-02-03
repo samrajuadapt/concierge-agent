@@ -466,7 +466,7 @@
                    type = "Boolean"
            defaultValue = "false"
                   label = "Hide customer details"
-            description = "Show/hide customer details for all flows"
+            description = "Show/hide customer details in all flows"
               sortOrder = "385"
              writeLevel = "profile"
               privilege = "install:adminAdmin"/>  

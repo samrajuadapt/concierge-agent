@@ -67,20 +67,24 @@
       <div class="visit-details-card">
       <!-- 1 Unlinked Customer (No customer is selected) when utt is enabled-->
       <div class="qm-summary-item qm-checkout-view__section" style="max-width:100%">
-          <div style="display:flex;width: 100%;position: relative;" *ngIf="( !tempCustomer && !selectedCustomer )" class="qm-checkout-view__unlinked-customer">
+          <div style="display:flex;width: 100%;position: relative;" *ngIf="( !tempCustomer && !selectedCustomer ) || (hideCustomerdetails && !selectedCustomer && tempCustomer )" class="qm-checkout-view__unlinked-customer">
               <h1>{{ 'label.visit.details.heading' | translate }}</h1>
-              <button *ngIf="!isCustomerFlowHidden" class="qm-transparent-btn icon-customer-add" (click)="goToPanel(1)">
+              <button *ngIf="!isCustomerFlowHidden && !tempCustomer" class="qm-transparent-btn icon-customer-add" (click)="goToPanel(1)">
               <i   class="qm-action-btn__icon" aria-hidden="true"></i>
               <span class="sr-only"> {{ 'addCustomer' | translate }}</span>
+            </button>
+            <button *ngIf="!isCustomerFlowHidden && tempCustomer" class="qm-transparent-btn icon-edit" (click)="goToPanel(1)">
+              <i   class="qm-action-btn__icon" aria-hidden="true"></i>
+              <span class="sr-only"> {{ 'editCustomer' | translate }}</span>
             </button>
           </div>
       </div>
 
       <!-- 3 if selected customer and utt enabled  -->
-      <div tabindex="0"  *ngIf="selectedCustomer || tempCustomer" class="qm-checkout-view__summary-grouping qm-checkout-view__section"  (click)="goToPanel(1)" (keydown.space)="goToPanel(1)" (keydown.enter)="goToPanel(1)" >
+      <div tabindex="0"  *ngIf="(selectedCustomer || (tempCustomer && !hideCustomerdetails)) " class="qm-checkout-view__summary-grouping qm-checkout-view__section"  (click)="goToPanel(1)" (keydown.space)="goToPanel(1)" (keydown.enter)="goToPanel(1)" >
           <div class="custom_header_h2" *ngIf="selectedCustomer && !hideCustomerdetails">{{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}}</div>
           <div class="custom_header_h2" *ngIf="selectedCustomer && hideCustomerdetails">{{selectedCustomer.id}}</div>
-          <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName && !hideCustomerdetails"> {{tempCustomer.firstName + ' '}}</span> <span *ngIf="tempCustomer && tempCustomer.lastName">{{tempCustomer.lastName}} </span></div>
+          <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName && !hideCustomerdetails"> {{tempCustomer.firstName + ' '}}</span> <span *ngIf="tempCustomer && tempCustomer.lastName  && !hideCustomerdetails">{{tempCustomer.lastName}} </span></div>
           <span *ngIf="!hideCustomerdetails">                    
           <div class="qm-summary-item" *ngIf="selectedCustomer && selectedCustomer.properties?.phoneNumber"> 
             <span class="qm-summary-item__icon icon-phone"></span>
@@ -105,7 +109,7 @@
 
       <!-- If customer flow is hidden -->
       <div class="qm-summary-item qm-checkout-view__section">
-          <div *ngIf="!isCustomerFlowHidden && (tempCustomer || selectedCustomer)">
+          <div *ngIf="!isCustomerFlowHidden && (tempCustomer && !hideCustomerdetails || selectedCustomer)">
             <h2>{{ 'label.visit.details.heading' | translate }}</h2>
           </div>
       </div>

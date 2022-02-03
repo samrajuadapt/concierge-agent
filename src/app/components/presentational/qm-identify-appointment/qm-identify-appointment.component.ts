@@ -1430,9 +1430,13 @@ export class QmIdentifyAppointmentComponent implements OnInit, OnDestroy {
     let appointmentInfo = "";
 
     if (this.selectedAppointment && this.selectedAppointment.customers[0]) {
-
-      appointmentInfo += `${this.selectedAppointment.customers[0].firstName} `;
-      appointmentInfo += `${this.selectedAppointment.customers[0].lastName}`;
+      if(this.hideCustomerdetails) {
+        appointmentInfo = `${this.selectedAppointment.customers[0].id} `
+      } else {
+        appointmentInfo += `${this.selectedAppointment.customers[0].firstName} `;
+        appointmentInfo += `${this.selectedAppointment.customers[0].lastName}`;
+      }
+    
     }
 
     return appointmentInfo;

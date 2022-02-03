@@ -80,7 +80,7 @@ export class QmRescheduleComponent implements OnInit, OnDestroy {
   userLocale: string = DEFAULT_LOCALE;
   enterDateErrorMsg: String;
   userDirection: string;
-
+  hideCustomerdetails: boolean = false;
   currentRescheduleState: RescheduleState = RescheduleState.Default;
   selectedDates: CalendarDate[];
 
@@ -172,6 +172,7 @@ export class QmRescheduleComponent implements OnInit, OnDestroy {
         if (uttParameters) {
           this.isRescheduleEnabledInUtt = uttParameters.reSheduleAppointment;
           this.isDeleteEnabledInUtt = uttParameters.delAppointment;
+          this.hideCustomerdetails = uttParameters.hideCustomerDetails;
         }
       })
       .unsubscribe();
@@ -435,8 +436,12 @@ export class QmRescheduleComponent implements OnInit, OnDestroy {
   getSelectedAppointmentInfoCustomer() {
     let appointmentInfo = "";
     if (this.editAppointment && this.editAppointment.customers[0]) {
-      appointmentInfo += `${this.editAppointment.customers[0].firstName} `;
-      appointmentInfo += `${this.editAppointment.customers[0].lastName}`;
+      if (this.hideCustomerdetails) {
+        appointmentInfo = `${this.editAppointment.customers[0].id} `
+      } else {
+        appointmentInfo += `${this.editAppointment.customers[0].firstName} `;
+        appointmentInfo += `${this.editAppointment.customers[0].lastName}`;
+      } 
     }
     return appointmentInfo;
   }
