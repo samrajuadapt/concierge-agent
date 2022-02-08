@@ -38,11 +38,11 @@ This document describes the new features, bug corrections, known issues and reco
 
 ----------
 -->
-<h2>Version 4.1.2</h2>
+<h2>Version 4.2.0</h2>
 
-**Date: 07/12/2021**
+**Date: 08/02/2021**
  
-**Build number: 5**
+**Build number: 1**
 
 <h3>Stories</h3>
 
@@ -51,10 +51,11 @@ This document describes the new features, bug corrections, known issues and reco
 | **QP-11635** | **Hide name, surname, phone number and e-mail address** |
 
 
+
 ----------
 <h2>Version 4.1.1</h2>
 
-**Date: 07/12/2021**
+**Date: 03/02/2021**
  
 **Build number: 5**
 
