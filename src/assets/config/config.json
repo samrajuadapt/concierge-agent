@@ -1,0 +1,42 @@
+{
+    "version": {
+        "value": "1.0.0",
+        "description": "Current Version"
+    },
+    "erp_url": {
+        "value": "http://localhost:8085/erp/branches",
+        "description": "Eid card Reader URL"
+    },
+    "eid_url": {
+        "value": "http://localhost:8085/EIDCardReader/EIDDataReader",
+        "description": "Eid card Reader URL"
+    },
+    "wrist_band_url": {
+        "value": "http://localhost:8085/PineTreeWristbandApp/printWristband",
+        "description": "Wrist band print URL"
+    },
+    "barcode":{
+        "value":"Pre_Typing",
+        "description":"Keyword in servicegroup name to make barcode required"
+    },
+    "qr_code_url":{
+        "value":"ws://localhost:8080/QRCodeWebSocketServer/qrcodescanner",
+        "description":"Url for QR code scanning"
+    },
+    "customerType": {
+        "value": [
+            {
+                "id": 1,
+                "name": "Individual"
+            },
+            {
+                "id": 2,
+                "name": "Corporate"
+            },
+            {
+                "id": 3,
+                "name": "Barcode"
+            }
+        ]
+    }
+}

@@ -22,6 +22,10 @@ import { StaffPoolEffects } from './staff-pool.effcts';
 import { JWTTokenEffects } from './jwtToken.effects';
 import { from } from 'rxjs';
 import { LanguageEffects } from './language.effects';
+import { CustomerTypeEffects } from './customer-type.effects';
+import { ErpBranchEffects } from './erp-branches.effects';
+import { VariablesEffects } from './variables.effects';
+import { EmiratesIdEffetcs } from './emirates-id.effects';
 
 export const effects: any[] = [
     SystemInfoEffects,
@@ -45,7 +49,11 @@ export const effects: any[] = [
     QueueVisitsEffects,
     StaffPoolEffects,
     JWTTokenEffects,
-    LanguageEffects
+    LanguageEffects,
+    CustomerTypeEffects,
+    ErpBranchEffects,
+    VariablesEffects,
+    EmiratesIdEffetcs
 ];
 
 export * from './language.effects';

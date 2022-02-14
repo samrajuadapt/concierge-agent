@@ -1,117 +1,149 @@
-<div class="qm-checkout-view" [ngClass]="{'qm-checkout-view__summary--arive': flowType === 'ARRIVE_APPOINTMENT'}" dir="{{userDirection$ | async}}">
+<div class="qm-checkout-view" [ngClass]="{'qm-checkout-view__summary--arive': flowType === 'ARRIVE_APPOINTMENT'}"
+  dir="{{userDirection$ | async}}">
   <!-- summary card for create appointment-->
   <div class="qm-checkout-view__summary" id="main-container" *ngIf="selectedAppointment">
     <div class="visit-details-card">
-    <div  [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null"
-     class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" 
-     (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)">
-      <div class="custom_header_h2" *ngIf="selectedCustomer">
-        <span *ngIf="!(hideCustomerdetails)"> {{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}} </span>
-        <span *ngIf="hideCustomerdetails"> {{selectedCustomer.id}} </span>
-      </div>
-      <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
-        <span class="qm-summary-item__icon icon-phone"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{ selectedCustomer.properties?.phoneNumber }}</span>
+      <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping"
+        (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)"
+        (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)"
+        (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(3)">
+        <div class="custom_header_h2" *ngIf="selectedCustomer">
+          <span *ngIf="!(hideCustomerdetails)"> {{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}} </span>
+          <span *ngIf="hideCustomerdetails"> {{selectedCustomer.id}} </span>
+        </div>
+        <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
+          <span class="qm-summary-item__icon icon-phone"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{
+            selectedCustomer.properties?.phoneNumber }}</span>
+        </div>
+
+        <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
+          <span class="qm-summary-item__icon icon-mail"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{
+            selectedCustomer.properties?.email }}</span>
+        </div>
       </div>
 
-      <div class="qm-summary-item" *ngIf="!(hideCustomerdetails)">
-        <span class="qm-summary-item__icon icon-mail"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix" *ngIf="selectedCustomer">{{ selectedCustomer.properties?.email }}</span>
+      <h1>{{ 'label.appconfirm.details.heading' | translate }}</h1>
+      <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping"
+        (click)="goToPanel(2)" (keydown.enter)="goToPanel(2)" (keydown.space)="goToPanel(2)"
+        *ngIf="selectedAppointment">
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon icon-calendar-light"></span>
+          <span class="qm-summary-item__text">{{ getSelectedAppointmentSummaryTime() }}</span>
+        </div>
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon icon-clock"></span>
+          <span
+            class="qm-summary-item__text qm-summary-item__text--time-period"><span>{{getStartTime()}}</span><span>&nbsp;-&nbsp;</span><span>{{getEndTime()}}</span></span>
+        </div>
       </div>
-    </div>  
-
-    <h1>{{ 'label.appconfirm.details.heading' | translate }}</h1>
-    <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping" (click)="goToPanel(2)" (keydown.enter)="goToPanel(2)" (keydown.space)="goToPanel(2)" *ngIf="selectedAppointment">
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon icon-calendar-light"></span>
-        <span class="qm-summary-item__text" >{{ getSelectedAppointmentSummaryTime() }}</span>
+      <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping"
+        (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" *ngIf="selectedAppointment">
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon icon-home"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix">{{selectedAppointment?.branch?.name ||
+            selectedBranch?.name}}</span>
+        </div>
       </div>
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon icon-clock"></span>
-        <span class="qm-summary-item__text qm-summary-item__text--time-period"><span>{{getStartTime()}}</span><span>&nbsp;-&nbsp;</span><span>{{getEndTime()}}</span></span>
+      <div tabindex="0" class="qm-checkout-view__summary-grouping qm-services-grouping" (keydown.enter)="goToPanel(1)"
+        (keydown.space)="goToPanel(1)" (click)="goToPanel(1)" *ngIf="selectedAppointment">
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon icon-service"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix">{{appServices}}</span>
+        </div>
       </div>
+      <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping"
+        (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" *ngIf="selectedAppointment && getShowPriResource()">
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon qm-summary-item__icon-resources icon-radiobutton-unchecked"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix">
+            {{ (selectedAppointment?.resourceServiceDecorators[0]?.primaryResource?.displayName || '') + ' ['+
+            (selectedAppointment?.resourceServiceDecorators[0]?.primaryResource?.category || '')+']' }}
+          </span>
+        </div>
+      </div>
+      <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping"
+        (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"
+        (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" *ngIf="selectedAppointment && getShowSecResource()">
+        <div class="qm-summary-item">
+          <span class="qm-summary-item__icon qm-summary-item__icon-resources icon-radiobutton-unchecked"></span>
+          <span class="qm-summary-item__text qm-text-overflow-fix">
+            {{ (selectedAppointment?.resourceServiceDecorators[0]?.secondaryResources[0]?.displayName || '') + ' ['+
+            (selectedAppointment?.resourceServiceDecorators[0]?.secondaryResources[0]?.category || '')+']' }}
+          </span>
+        </div>
+      </div>
+      <qm-notes *ngIf="isNoteEnabled" (onNotesChanged)="onNotesChanged($event)" [notes]="noteTextStr"></qm-notes>
     </div>
-    <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"  *ngIf="selectedAppointment">
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon icon-home"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix">{{selectedAppointment?.branch?.name || selectedBranch?.name}}</span>
-      </div>
-    </div>
-    <div tabindex="0" class="qm-checkout-view__summary-grouping qm-services-grouping" (keydown.enter)="goToPanel(1)" (keydown.space)="goToPanel(1)" (click)="goToPanel(1)"  *ngIf="selectedAppointment">
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon icon-service"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix">{{appServices}}</span>
-      </div>
-    </div>
-    <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"  *ngIf="selectedAppointment && getShowPriResource()">
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon qm-summary-item__icon-resources icon-radiobutton-unchecked"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix">
-          {{ (selectedAppointment?.resourceServiceDecorators[0]?.primaryResource?.displayName || '') + ' ['+ (selectedAppointment?.resourceServiceDecorators[0]?.primaryResource?.category || '')+']' }}
-        </span>
-      </div>
-    </div>
-    <div [attr.tabindex]="flowType !== 'ARRIVE_APPOINTMENT' ? '0' : null" class="qm-checkout-view__summary-grouping" (keydown.enter)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (keydown.space)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)" (click)="flowType !== 'ARRIVE_APPOINTMENT' && goToPanel(0)"  *ngIf="selectedAppointment && getShowSecResource()">
-      <div class="qm-summary-item">
-        <span class="qm-summary-item__icon qm-summary-item__icon-resources icon-radiobutton-unchecked"></span>
-        <span class="qm-summary-item__text qm-text-overflow-fix">
-          {{ (selectedAppointment?.resourceServiceDecorators[0]?.secondaryResources[0]?.displayName || '') + ' ['+ (selectedAppointment?.resourceServiceDecorators[0]?.secondaryResources[0]?.category || '')+']' }}
-        </span>
-      </div>
-    </div>
-    <qm-notes *ngIf="isNoteEnabled" (onNotesChanged)="onNotesChanged($event)" [notes]="noteTextStr"></qm-notes>
   </div>
-</div>
   <!-- summary card for create visit-->
-  <div class="qm-checkout-view__summary qm-checkout-view__summary-create-visit" *ngIf="flowType=='CREATE_VISIT'"  id="main-container">
-      <div class="visit-details-card">
+  <div class="qm-checkout-view__summary qm-checkout-view__summary-create-visit" *ngIf="flowType=='CREATE_VISIT'"
+    id="main-container">
+    <div class="visit-details-card">
       <!-- 1 Unlinked Customer (No customer is selected) when utt is enabled-->
       <div class="qm-summary-item qm-checkout-view__section" style="max-width:100%">
-          <div style="display:flex;width: 100%;position: relative;" *ngIf="( !tempCustomer && !selectedCustomer ) || (hideCustomerdetails && !selectedCustomer && tempCustomer )" class="qm-checkout-view__unlinked-customer">
-              <h1>{{ 'label.visit.details.heading' | translate }}</h1>
-              <button *ngIf="!isCustomerFlowHidden && !tempCustomer" class="qm-transparent-btn icon-customer-add" (click)="goToPanel(1)">
-              <i   class="qm-action-btn__icon" aria-hidden="true"></i>
-              <span class="sr-only"> {{ 'addCustomer' | translate }}</span>
-            </button>
-            <button *ngIf="!isCustomerFlowHidden && tempCustomer" class="qm-transparent-btn icon-edit" (click)="goToPanel(1)">
-              <i   class="qm-action-btn__icon" aria-hidden="true"></i>
-              <span class="sr-only"> {{ 'editCustomer' | translate }}</span>
-            </button>
-          </div>
+        <div style="display:flex;width: 100%;position: relative;"
+          *ngIf="( !tempCustomer && !selectedCustomer ) || (hideCustomerdetails && !selectedCustomer && tempCustomer )"
+          class="qm-checkout-view__unlinked-customer">
+          <h1>{{ 'label.visit.details.heading' | translate }}</h1>
+          <button *ngIf="!isCustomerFlowHidden && !tempCustomer" class="qm-transparent-btn icon-customer-add"
+            (click)="goToPanel(1)">
+            <i class="qm-action-btn__icon" aria-hidden="true"></i>
+            <span class="sr-only"> {{ 'addCustomer' | translate }}</span>
+          </button>
+          <button *ngIf="!isCustomerFlowHidden && tempCustomer" class="qm-transparent-btn icon-edit"
+            (click)="goToPanel(1)">
+            <i class="qm-action-btn__icon" aria-hidden="true"></i>
+            <span class="sr-only"> {{ 'editCustomer' | translate }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- 3 if selected customer and utt enabled  -->
-      <div tabindex="0"  *ngIf="(selectedCustomer || (tempCustomer && !hideCustomerdetails)) " class="qm-checkout-view__summary-grouping qm-checkout-view__section"  (click)="goToPanel(1)" (keydown.space)="goToPanel(1)" (keydown.enter)="goToPanel(1)" >
-          <div class="custom_header_h2" *ngIf="selectedCustomer && !hideCustomerdetails">{{selectedCustomer.firstName + ' ' + selectedCustomer.lastName}}</div>
-          <div class="custom_header_h2" *ngIf="selectedCustomer && hideCustomerdetails">{{selectedCustomer.id}}</div>
-          <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName && !hideCustomerdetails"> {{tempCustomer.firstName + ' '}}</span> <span *ngIf="tempCustomer && tempCustomer.lastName  && !hideCustomerdetails">{{tempCustomer.lastName}} </span></div>
-          <span *ngIf="!hideCustomerdetails">                    
-          <div class="qm-summary-item" *ngIf="selectedCustomer && selectedCustomer.properties?.phoneNumber"> 
+      <div tabindex="0" *ngIf="(selectedCustomer || (tempCustomer && !hideCustomerdetails)) "
+        class="qm-checkout-view__summary-grouping qm-checkout-view__section" (click)="goToPanel(1)"
+        (keydown.space)="goToPanel(1)" (keydown.enter)="goToPanel(1)">
+        <div class="custom_header_h2" *ngIf="selectedCustomer && !hideCustomerdetails">{{selectedCustomer.firstName + '
+          ' + selectedCustomer.lastName}}</div>
+        <div class="custom_header_h2" *ngIf="selectedCustomer && hideCustomerdetails">{{selectedCustomer.id}}</div>
+        <div class="custom_header_h2"><span *ngIf="tempCustomer && tempCustomer.firstName && !hideCustomerdetails">
+            {{tempCustomer.firstName + ' '}}</span> <span
+            *ngIf="tempCustomer && tempCustomer.lastName  && !hideCustomerdetails">{{tempCustomer.lastName}} </span>
+        </div>
+        <span *ngIf="!hideCustomerdetails">
+          <div class="qm-summary-item" *ngIf="selectedCustomer && selectedCustomer.properties?.phoneNumber">
             <span class="qm-summary-item__icon icon-phone"></span>
-            <span class="qm-summary-item__text qm-text-overflow-fix">{{ selectedCustomer.properties?.phoneNumber }}</span>
+            <span class="qm-summary-item__text qm-text-overflow-fix">{{ selectedCustomer.properties?.phoneNumber
+              }}</span>
           </div>
 
-          <div class="qm-summary-item" *ngIf="tempCustomer && tempCustomer.phone"> 
+          <div class="qm-summary-item" *ngIf="tempCustomer && tempCustomer.phone">
             <span class="qm-summary-item__icon icon-phone"></span>
             <span class="qm-summary-item__text qm-text-overflow-fix">{{ tempCustomer.phone }}</span>
           </div>
-    
+
           <div class="qm-summary-item" *ngIf="selectedCustomer && selectedCustomer.properties?.email">
             <span class="qm-summary-item__icon icon-mail"></span>
-            <span class="qm-summary-item__text qm-text-overflow-fix" >{{ selectedCustomer.properties?.email }}</span>
+            <span class="qm-summary-item__text qm-text-overflow-fix">{{ selectedCustomer.properties?.email }}</span>
           </div>
           <div class="qm-summary-item" *ngIf="tempCustomer && tempCustomer.email">
             <span class="qm-summary-item__icon icon-mail"></span>
-            <span class="qm-summary-item__text qm-text-overflow-fix" >{{ tempCustomer.email }}</span>
+            <span class="qm-summary-item__text qm-text-overflow-fix">{{ tempCustomer.email }}</span>
           </div>
         </span>
       </div>
 
       <!-- If customer flow is hidden -->
       <div class="qm-summary-item qm-checkout-view__section">
-          <div *ngIf="!isCustomerFlowHidden && (tempCustomer && !hideCustomerdetails || selectedCustomer)">
-            <h2>{{ 'label.visit.details.heading' | translate }}</h2>
-          </div>
+        <div *ngIf="!isCustomerFlowHidden && (tempCustomer && !hideCustomerdetails || selectedCustomer)">
+          <h2>{{ 'label.visit.details.heading' | translate }}</h2>
+        </div>
       </div>
 
       <div class="qm-checkout-view__summary-grouping-non-selective" *ngIf="selectedBranch">
@@ -120,110 +152,141 @@
           <span class="qm-summary-item__text qm-text-overflow-fix">{{selectedBranch?.name}}</span>
         </div>
       </div>
-      <div class="qm-checkout-view__summary-grouping" tabindex="0" (keydown.space)="goToPanel(0)" (keydown.enter)="goToPanel(0)" (click)="goToPanel(0)"  *ngIf="appServices">
+      <div class="qm-checkout-view__summary-grouping" tabindex="0" (keydown.space)="goToPanel(0)"
+        (keydown.enter)="goToPanel(0)" (click)="goToPanel(0)" *ngIf="appServices">
         <div class="qm-summary-item">
           <span class="qm-summary-item__icon icon-service"></span>
           <span class="qm-summary-item__text qm-text-overflow-fix">{{appServices}}</span>
         </div>
       </div>
-      <qm-notes [flow]="flowType" [isCustomerSelected]="selectedCustomer" *ngIf="isNoteEnabled" (onNotesChanged)="onNotesChanged($event)" [notes]="noteTextStr"></qm-notes>
-      
+      <qm-notes [flow]="flowType" [isCustomerSelected]="selectedCustomer" *ngIf="isNoteEnabled"
+        (onNotesChanged)="onNotesChanged($event)" [notes]="noteTextStr"></qm-notes>
+
     </div>
-    </div>
+  </div>
 
   <!-- right pannel -->
   <div class="qm-checkout-view__notifications">
     <div class="qm-checkout-view__notifications-container" style="width:480px">
-    <div *ngIf=" isVipLvl1Enabled || isVipLvl2Enabled || isVipLvl3Enabled" class="qm-checkout-view__vip-container">
-      <div class="vip-label" [style.flex]="('label.vip_section' | translate).length > 6 ? 1.5: 1">{{ 'label.vip_section' | translate }}</div>
-          <div class="radio-container">
-            <div *ngIf="isVipLvl1Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton1Focucsed==true}">
-              <div class="checkbox-container" [ngStyle]="{'border': vipLevel1Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
-                <input class="checkbox" type="checkbox" id="vip_lvl_1" [ngModel]="vipLevel1Checked" (click)="onVip1Clicked()"  (focus)="VipButton1Focucsed=true"  (focusout)="VipButton1Focucsed=false">
-                <label class="label" for="vip_lvl_1" [ngStyle]="{'background': vipLevel1Checked ? '#017C65' : 'transparent'}">
-                  <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_one_label' | translate }}</span>
-                </label>
-              </div>
-              <span class="label">{{ 'vip_one_label' | translate }}</span>
+      <div *ngIf=" isVipLvl1Enabled || isVipLvl2Enabled || isVipLvl3Enabled" class="qm-checkout-view__vip-container">
+        <div class="vip-label" [style.flex]="('label.vip_section' | translate).length > 6 ? 1.5: 1">{{
+          'label.vip_section' | translate }}</div>
+        <div class="radio-container">
+          <div *ngIf="isVipLvl1Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton1Focucsed==true}">
+            <div class="checkbox-container"
+              [ngStyle]="{'border': vipLevel1Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
+              <input class="checkbox" type="checkbox" id="vip_lvl_1" [ngModel]="vipLevel1Checked"
+                (click)="onVip1Clicked()" (focus)="VipButton1Focucsed=true" (focusout)="VipButton1Focucsed=false">
+              <label class="label" for="vip_lvl_1"
+                [ngStyle]="{'background': vipLevel1Checked ? '#017C65' : 'transparent'}">
+                <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_one_label' | translate }}</span>
+              </label>
             </div>
-    
-            <div *ngIf="isVipLvl2Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton2Focucsed}">
-              <div class="checkbox-container" [ngStyle]="{'border': vipLevel2Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
-                <input class="checkbox" type="checkbox" id="vip_lvl_2" [ngModel]="vipLevel2Checked" (click)="onVip2Clicked()" (focus)="VipButton2Focucsed=true"  (focusout)="VipButton2Focucsed=false">
-                <label class="label" for="vip_lvl_2" [ngStyle]="{'background': vipLevel2Checked ? '#017C65' : 'transparent'}">
-                    <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_two_label' | translate }}</span>
-                </label>
-              </div>
-              <span class="label">{{ 'vip_two_label' | translate }}</span>
-            </div>
-    
-            <div *ngIf="isVipLvl3Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton3Focucsed}">
-              <div class="checkbox-container" [ngStyle]="{'border': vipLevel3Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
-                <input class="checkbox" type="checkbox" id="vip_lvl_3" [ngModel]="vipLevel3Checked" (click)="onVip3Clicked()" (focus)="VipButton3Focucsed=true"  (focusout)="VipButton3Focucsed=false">
-                <label class="label" for="vip_lvl_3" [ngStyle]="{'background': vipLevel3Checked ? '#017C65' : 'transparent'}">
-                    <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_three_label' | translate }}</span>
-                </label>
-              </div>
-              <span class="label">{{ 'vip_three_label' | translate }}</span>
-            </div>
-    
+            <span class="label">{{ 'vip_one_label' | translate }}</span>
           </div>
-    
-    </div>
 
-    <div class="qm-checkout-view__notifications-heading" *ngIf="flowType=='CREATE_APPOINTMENT' || flowType=='ARRIVE_APPOINTMENT'||flowType=='CREATE_VISIT'">
-          <h1 class="qm-checkout-view__notifications-heading" id="notification-heading" tabindex="-1">{{'label.appconfirm.notification.heading' | translate}}</h1>
-          <h2 class="qm-checkout-view__notifications-sub-heading">{{'label.appconfirm.notification.subheading' | translate}}</h2>
-    </div>
-  
-    <button class="button qm-button-plain qm-button-plain-with-icon" [ngClass]="{'qm-button-plain--active' : smsSelected}" *ngIf="smsActionEnabled" (click)="onSmsSelected()">
-      <span class="qm-button-icon-container">
-      <span class="icon-smartphone"></span>
-      </span>
-      <span>{{ 'send_sms' | translate}}</span>
-      <span class="sr-only"> notification method</span>
-    </button>
+          <div *ngIf="isVipLvl2Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton2Focucsed}">
+            <div class="checkbox-container"
+              [ngStyle]="{'border': vipLevel2Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
+              <input class="checkbox" type="checkbox" id="vip_lvl_2" [ngModel]="vipLevel2Checked"
+                (click)="onVip2Clicked()" (focus)="VipButton2Focucsed=true" (focusout)="VipButton2Focucsed=false">
+              <label class="label" for="vip_lvl_2"
+                [ngStyle]="{'background': vipLevel2Checked ? '#017C65' : 'transparent'}">
+                <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_two_label' | translate }}</span>
+              </label>
+            </div>
+            <span class="label">{{ 'vip_two_label' | translate }}</span>
+          </div>
 
-    <button class="button qm-button-plain qm-button-plain-with-icon" [ngClass]="{'qm-button-plain--active' : ticketSelected}" *ngIf="ticketActionEnabled" (click)="onTicketSelected()">
-      <span class="qm-button-icon-container">
-        <span class="icon-ticket-small"></span>
-      </span>
+          <div *ngIf="isVipLvl3Enabled" class="level" [ngClass]="{'vipButtonFocused':VipButton3Focucsed}">
+            <div class="checkbox-container"
+              [ngStyle]="{'border': vipLevel3Checked ? '3px solid #017C65' : '3px solid rgba(0,0,0,0.62)'}">
+              <input class="checkbox" type="checkbox" id="vip_lvl_3" [ngModel]="vipLevel3Checked"
+                (click)="onVip3Clicked()" (focus)="VipButton3Focucsed=true" (focusout)="VipButton3Focucsed=false">
+              <label class="label" for="vip_lvl_3"
+                [ngStyle]="{'background': vipLevel3Checked ? '#017C65' : 'transparent'}">
+                <span class="sr-only">{{ 'label.vip_section' | translate }} {{ 'vip_three_label' | translate }}</span>
+              </label>
+            </div>
+            <span class="label">{{ 'vip_three_label' | translate }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="qm-checkout-view__notifications-heading"
+        *ngIf="flowType=='CREATE_APPOINTMENT' || flowType=='ARRIVE_APPOINTMENT'||flowType=='CREATE_VISIT'">
+        <h1 class="qm-checkout-view__notifications-heading" id="notification-heading" tabindex="-1">
+          {{'label.appconfirm.notification.heading' | translate}}</h1>
+        <h2 class="qm-checkout-view__notifications-sub-heading">{{'label.appconfirm.notification.subheading' |
+          translate}}</h2>
+      </div>
+
+      <button *ngIf="(flowType=='CREATE_VISIT')" class="button qm-button-plain" [ngClass]="{'qm-button-plain--active' : printWristBandSelected}"
+         (click)="onPrintWristBand()">
+        <span>{{ 'label.print.wrist' | translate}}</span>
+        <span class="sr-only"> notification method</span>
+      </button>
+
+      <button class="button qm-button-plain qm-button-plain-with-icon"
+        [ngClass]="{'qm-button-plain--active' : smsSelected}" *ngIf="smsActionEnabled" (click)="onSmsSelected()">
+        <span class="qm-button-icon-container">
+          <span class="icon-smartphone"></span>
+        </span>
+        <span>{{ 'send_sms' | translate}}</span>
+        <span class="sr-only"> notification method</span>
+      </button>
+
+      <button class="button qm-button-plain qm-button-plain-with-icon"
+        [ngClass]="{'qm-button-plain--active' : ticketSelected}" *ngIf="ticketActionEnabled"
+        (click)="onTicketSelected()">
+        <span class="qm-button-icon-container">
+          <span class="icon-ticket-small"></span>
+        </span>
         <span>{{ 'print_ticket' | translate}}</span>
         <span class="sr-only"> notification method</span>
       </button>
 
-    <button class="button qm-button-plain" [ngClass]="{'qm-button-plain--active' : ticketlessSelected}" *ngIf="ticketlessActionEnabled" (click)="onTicketlessSelected()">
-       
+      <button class="button qm-button-plain" [ngClass]="{'qm-button-plain--active' : ticketlessSelected}"
+        *ngIf="ticketlessActionEnabled" (click)="onTicketlessSelected()">
+
         <span>{{ 'label.ticketless' | translate}}</span>
         <span class="sr-only"> notification method</span>
-    </button>
-  
-    <button class="button qm-button-plain qm-button-plain-with-icon" [ngClass]="{'qm-button-plain--active' : emailSelected }" *ngIf="emailActionEnabled" (click)="onEmailSelected()">
-      <span class="qm-button-icon-container">
-      <span class="icon-mail"></span></span>
-      <span>{{ 'label.email' | translate}}</span>
-      <span class="sr-only"> notification method</span>
-    </button>
-    <button class="button qm-button-plain qm-button-plain-with-icon" [ngClass]="{'qm-button-plain--active' : emailAndSmsSelected }" *ngIf="smsActionEnabled && emailActionEnabled"
-      (click)="onEmailAndSmsSelected()">
-      <span class="qm-button-icon-container">
-      <span class="icon-emailsms"></span></span>
-      <span>{{ 'send_sms_and_email' | translate}}</span>
-      <span class="sr-only"> notification method</span>
-    </button>
-    <button class="button qm-button-plain qm-button-plain-with-icon" [ngClass]="{'qm-button-plain--active' : noNotificationSelected }" *ngIf="isNoNotificationEnabled && (flowType=='CREATE_APPOINTMENT')"
-      (click)="onNoNotificationSelected()">
-      <span class="qm-button-icon-container">
-      <span class="icon-close-circle"></span></span>
-      <span>{{ 'no_notification' | translate}}</span>
-      <span class="sr-only"> notification method</span>
-    </button>
+      </button>
 
+      <button class="button qm-button-plain qm-button-plain-with-icon"
+        [ngClass]="{'qm-button-plain--active' : emailSelected }" *ngIf="emailActionEnabled" (click)="onEmailSelected()">
+        <span class="qm-button-icon-container">
+          <span class="icon-mail"></span></span>
+        <span>{{ 'label.email' | translate}}</span>
+        <span class="sr-only"> notification method</span>
+      </button>
+
+      <button class="button qm-button-plain qm-button-plain-with-icon"
+        [ngClass]="{'qm-button-plain--active' : emailAndSmsSelected }" *ngIf="smsActionEnabled && emailActionEnabled"
+        (click)="onEmailAndSmsSelected()">
+        <span class="qm-button-icon-container">
+          <span class="icon-emailsms"></span></span>
+        <span>{{ 'send_sms_and_email' | translate}}</span>
+        <span class="sr-only"> notification method</span>
+      </button>
+
+      <button class="button qm-button-plain qm-button-plain-with-icon"
+        [ngClass]="{'qm-button-plain--active' : noNotificationSelected }"
+        *ngIf="isNoNotificationEnabled && (flowType=='CREATE_APPOINTMENT')" (click)="onNoNotificationSelected()">
+        <span class="qm-button-icon-container">
+          <span class="icon-close-circle"></span></span>
+        <span>{{ 'no_notification' | translate}}</span>
+        <span class="sr-only"> notification method</span>
+      </button>
+
+    </div>
+    <div class="qm-flow-done-bar" *ngIf="buttonEnabled || printWristBandSelected">
+      <button class="qm-flow-done-bar__done-button btn-wrap" (click)="onButtonPressed()"> {{ 'label.confirm' | translate
+        }}</button>
+    </div>
   </div>
-  <div class="qm-flow-done-bar" *ngIf="buttonEnabled">
-    <button class="qm-flow-done-bar__done-button btn-wrap" (click)="onButtonPressed()"> {{ 'label.confirm' | translate }}</button>
-  </div>
-</div>
 </div>
 
 <qm-loading-modal *ngIf="loading"></qm-loading-modal>

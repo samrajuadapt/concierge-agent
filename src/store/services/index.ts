@@ -30,3 +30,8 @@ export * from './native-api';
 export * from './flow-open';
 export * from './autoclose-status';
 export * from './jwtToken';
+export * from './customer-type';
+export * from './erp-branch';
+export * from './barcode';
+export * from './variables';
+export * from './emirates-id';

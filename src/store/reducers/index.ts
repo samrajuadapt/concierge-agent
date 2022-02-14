@@ -30,6 +30,12 @@ import * as fromFlowOpen from './flow-open.reducer'
 import * as fromAutoCloseState from './autoclose-status.reducer';
 import * as fromJWTToken from './jwtToken.reducer';
 import * as fromLanguage from './language.reducer';
+import * as fromCustomerType from './customer-type.reducer';
+import * as fromErpBranches from './erp-branch.reducer';
+import * as fromBarcode from './barcode.reducer';
+import * as fromVariables from './variables.reducer';
+import * as fromEmiratesId from './emirates-id.reducer';
+
 
 export interface IAppState {
   systemInfo: fromSystemInfo.ISystemInfoState;
@@ -62,6 +68,11 @@ export interface IAppState {
   autoCloseState: fromAutoCloseState.IAutoCloseStatus,
   jwtToken: fromJWTToken.IJWTTokenState,
   language: fromLanguage.ILanguageState;
+  customerType:fromCustomerType.ICustoemrTypeState;
+  erp:fromErpBranches.IErpBranchState;
+  barcode:fromBarcode.IBarcodeState;
+  variables:fromVariables.IVariablesState;
+  eid:fromEmiratesId.IEmiratesIdState
 }
 
 export const reducers: ActionReducerMap<IAppState> = {
@@ -94,5 +105,10 @@ export const reducers: ActionReducerMap<IAppState> = {
   flowOpen: fromFlowOpen.reducer,
   autoCloseState: fromAutoCloseState.reducer,
   jwtToken: fromJWTToken.reducer,
-  language: fromLanguage.reducer
+  language: fromLanguage.reducer,
+  customerType:fromCustomerType.reducer,
+  erp:fromErpBranches.reducer,
+  barcode:fromBarcode.reducer,
+  variables:fromVariables.reducer,
+  eid:fromEmiratesId.reducer
 };

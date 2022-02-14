@@ -1,165 +1,205 @@
 import { ICustomer } from "../../models/ICustomer";
 import * as CustomerActions from '../actions'
 
-export interface ICustomerState{
-    customers:ICustomer[];
-    appointmentCustomers? : ICustomer[];
+export interface ICustomerState {
+    customers: ICustomer[];
+    appointmentCustomers?: ICustomer[];
+    cardCustomers: ICustomer[]
     currentCustomer: ICustomer;
-    searchText:string;
-    loading:boolean;
-    loaded:boolean;
-    error:Object;
+    searchText: string;
+    loading: boolean;
+    loaded: boolean;
+    error: Object;
     tempCustomer: ICustomer;
-    editCustomer:boolean;
+    editCustomer: boolean;
 }
 
-export const initialState:ICustomerState={
-    customers:[],
+export const initialState: ICustomerState = {
+    customers: [],
     appointmentCustomers: [],
-    currentCustomer:null,
-    searchText:'',
-    loading:false,
-    loaded:false,
-    error:null,
+    cardCustomers: [],
+    currentCustomer: null,
+    searchText: '',
+    loading: false,
+    loaded: false,
+    error: null,
     tempCustomer: null,
-    editCustomer:false
+    editCustomer: false
 };
 
 export function reducer(
-    state:ICustomerState = initialState,
-    action:CustomerActions.AllCustomerActions):ICustomerState{
-        switch(action.type){
-            case CustomerActions.UPDATE_CUSTOMER_SEARCH_TEXT:{
-                return{
-                    ...state,
-                    searchText:action.payload,
-                    customers:[],
-                    loaded:false
-                }
-            };
-        case CustomerActions.RESET_CUSTOMER_SEARCH_TEXT:{
-            return{
-                ...state,
-                searchText:'',
-                loaded:false
-            }
-            }
-
-        case CustomerActions.SELECT_CUSTOMER:{
+    state: ICustomerState = initialState,
+    action: CustomerActions.AllCustomerActions): ICustomerState {
+    switch (action.type) {
+        case CustomerActions.UPDATE_CUSTOMER_SEARCH_TEXT: {
             return {
                 ...state,
-                currentCustomer:action.payload
-            };
+                searchText: action.payload,
+                customers: [],
+                loaded: false
             }
-        
-        
-        case CustomerActions.EDIT_CUSTOMER:{
-                return {
-                    ...state,
-                    editCustomer:action.payload
-                };
-                }
-            
-        case CustomerActions.RESET_CURRENT_CUSTOMER:{
-            return{
+        };
+        case CustomerActions.RESET_CUSTOMER_SEARCH_TEXT: {
+            return {
                 ...state,
-                currentCustomer:null
+                searchText: '',
+                loaded: false
+            }
+        }
+
+        case CustomerActions.SELECT_CUSTOMER: {
+            return {
+                ...state,
+                currentCustomer: action.payload
             };
         }
 
-        case CustomerActions.FETCH_CUSTOMERS:{
-            return{
+
+        case CustomerActions.EDIT_CUSTOMER: {
+            return {
                 ...state,
-                loading:true,
-                loaded:false,
-                error:null
+                editCustomer: action.payload
             };
         }
 
-        case CustomerActions.FETCH_CUSTOMERS_SUCCESS:{
-            return{
+        case CustomerActions.RESET_CURRENT_CUSTOMER: {
+            return {
+                ...state,
+                currentCustomer: null
+            };
+        }
+
+        case CustomerActions.FETCH_CUSTOMERS: {
+            return {
+                ...state,
+                loading: true,
+                loaded: false,
+                error: null
+            };
+        }
+
+        case CustomerActions.FETCH_CUSTOMERS_SUCCESS: {
+            return {
                 ...state,
                 customers: [
                     ...action.payload
-                  ],
-                loading:false,
-                loaded:true,
-                error:null,
+                ],
+                loading: false,
+                loaded: true,
+                error: null,
             };
         }
 
-        case CustomerActions.FETCH_CUSTOMERS_FAIL:{
-            return{
+        case CustomerActions.FETCH_CUSTOMERS_FAIL: {
+            return {
                 ...state,
-                loading:false,
-                loaded:false,
-                error:action.payload
+                loading: false,
+                loaded: false,
+                error: action.payload
             };
         }
 
-        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS:{
-            return{
+        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS: {
+            return {
                 ...state,
-                loading:true,
-                loaded:false,
-                error:null,
+                loading: true,
+                loaded: false,
+                error: null,
             };
         }
 
 
-        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS_SUCCESS:{
-            return{
+        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS_SUCCESS: {
+            return {
                 ...state,
                 appointmentCustomers: [
                     ...action.payload
-                  ],
-                loading:false,
-                loaded:true,
-                error:null,
+                ],
+                loading: false,
+                loaded: true,
+                error: null,
             };
         }
 
-        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS_FAIL:{
-            return{
+        case CustomerActions.FETCH_APPOINTMENT_CUSTOMERS_FAIL: {
+            return {
                 ...state,
-                loading:false,
-                loaded:false,
-                error:action.payload
+                loading: false,
+                loaded: false,
+                error: action.payload
             };
         }
 
         case CustomerActions.RESET_CUSTOMERS: {
             return {
-              ...state,
-              customers: [],
-              appointmentCustomers: [],
-              loading: false,
-              loaded: false
+                ...state,
+                customers: [],
+                appointmentCustomers: [],
+                loading: false,
+                loaded: false
             };
         }
-        case CustomerActions.SET_TEMP_CUSTOMER:{
+        case CustomerActions.SET_TEMP_CUSTOMER: {
             return {
                 ...state,
-                tempCustomer:action.payload
+                tempCustomer: action.payload
             };
         }
-        case CustomerActions.RESET_TEMP_CUSTOMER:{
+        case CustomerActions.RESET_TEMP_CUSTOMER: {
             return {
                 ...state,
-                tempCustomer:null
+                tempCustomer: null
             };
         }
 
-        case CustomerActions.RESET_TEMP_CUSTOMER:{
+        case CustomerActions.RESET_TEMP_CUSTOMER: {
             return {
                 ...state,
-                tempCustomer:null
+                tempCustomer: null
             };
         }
-        default:{
+
+        case CustomerActions.FETCH_CUSTOMERS_CARD: {
+            return {
+                ...state,
+                loading: true,
+                loaded: false,
+                error: null
+            };
+        }
+
+        case CustomerActions.FETCH_CUSTOMERS_CARD_SUCCESS: {
+            return {
+                ...state,
+                cardCustomers: [
+                    ...action.payload
+                ],
+                loading: false,
+                loaded: true,
+                error: null,
+            };
+        }
+
+        case CustomerActions.FETCH_CUSTOMERS_CARD_FAIL: {
+            return {
+                ...state,
+                loading: false,
+                loaded: false,
+                error: action.payload
+            };
+        }
+
+        case CustomerActions.RESET_CUSTOMERS_CARD: {
+            return {
+                ...state,
+                cardCustomers: []
+            };
+        }
+
+        default: {
             return state;
         }
-            
-        }
+
     }
+}
 

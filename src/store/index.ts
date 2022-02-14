@@ -82,7 +82,22 @@ import {
   AutoCloseStatusSelectors,
   JWTTokenDataService,
   JWTTokenDispatchers,
-  JWTTokenSelectors
+  JWTTokenSelectors,
+  CustomerTypeDataService,
+  CustomerTypeDispatchers,
+  CustomerTypeSelectors,
+  ErpBranchDataService,
+  ErpBranchDispatcher,
+  ErpBranchSelectors,
+  BarcodeDispatchers,
+  BarcodeSelectors,
+  VariablesDataService,
+  VariablesDispathers,
+  VariableSelectors,
+  EmiratesIdDataService,
+  EmiratesIdDispatchers,
+  EmiratesIdSelectors
+  
 } from "./services";
 import { LanguageDispatchers, LanguageDataService, LanguageSelectors } from './services/language';
 
@@ -168,5 +183,19 @@ export const storeServices = [
   JWTTokenSelectors,
   LanguageDispatchers,
   LanguageDataService,
-  LanguageSelectors
+  LanguageSelectors,
+  CustomerTypeDataService,
+  CustomerTypeDispatchers,
+  CustomerTypeSelectors,
+  ErpBranchDataService,
+  ErpBranchDispatcher,
+  ErpBranchSelectors,
+  BarcodeDispatchers,
+  BarcodeSelectors,
+  VariablesDataService,
+  VariablesDispathers,
+  VariableSelectors,
+  EmiratesIdDataService,
+  EmiratesIdDispatchers,
+  EmiratesIdSelectors
 ];

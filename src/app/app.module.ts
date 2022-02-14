@@ -17,7 +17,7 @@ import { AccessModuleGuard } from "../../src/auth-guards/access-module-guard";
 // Angular Modules
 import { BrowserModule } from "@angular/platform-browser";
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from "@angular/common/http";
-import { NgModule, ApplicationRef, ErrorHandler, Injectable } from "@angular/core";
+import { NgModule, ApplicationRef, ErrorHandler, Injectable, APP_INITIALIZER } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterModule } from "@angular/router";
 
@@ -182,6 +182,11 @@ import { QmAppointmentInfoComponent } from './components/presentational/qm-appoi
 import { QmKeyCaptureDirective } from './directives/qm-key-capture.directive';
 import {A11yModule} from '@angular/cdk/a11y';
 import { QmWcagStatementComponent } from './components/presentational/qm-wcag-statement/qm-wcag-statement.component';
+import { BroadcastService } from 'src/util/services/brodcast.service';
+import { ConfigServices } from 'src/util/services/config-service';
+import { QmCustomerTypeComponent } from './components/presentational/qm-customer-type/qm-customer-type.component';
+import { QmServiceGroupComponent } from './components/presentational/qm-service-group/qm-service-group.component';
+import { WebsocketService } from 'src/util/services/websocket.service';
 
 
 // Global options for Toastr
@@ -293,6 +298,8 @@ export class MyHammerConfig extends HammerGestureConfig {
     QmAppointmentInfoComponent,
     QmKeyCaptureDirective,
     QmWcagStatementComponent,
+    QmCustomerTypeComponent,
+    QmServiceGroupComponent,
   ],
   entryComponents: [
     QmCustomToastComponent,
@@ -369,6 +376,7 @@ export class MyHammerConfig extends HammerGestureConfig {
     BookingHelperService,
     LocalStorage,
     NativeApiSupportService,
+    WebsocketService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: QmGlobalHttpInterceptor,
@@ -383,7 +391,15 @@ export class MyHammerConfig extends HammerGestureConfig {
     {
       provide: ErrorHandler,
       useClass: ErrorsHandler,
-    }
+    },
+    BroadcastService,
+    ConfigServices,
+    {
+      provide:APP_INITIALIZER,
+      useFactory:configuration, 
+      deps:[ConfigServices]
+      ,multi:true
+    },
   ],
   bootstrap: [AppComponent],
 
@@ -424,4 +440,8 @@ export class AppModule {
       this.router.navigate(["/loading"]);
     }
   }
+}
+
+export function configuration (config:ConfigServices) { 
+  return () => config.load()
 }

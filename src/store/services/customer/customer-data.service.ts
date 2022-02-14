@@ -71,4 +71,28 @@ export class CustomerDataService{
         );
     }
 
+    getCustomersByCard(cardNumber: string): Observable<ICustomer[]> {
+        return this.http
+          .get<ICustomer[]>(`${servicePoint}/customers;cardNumber=${encodeURIComponent(cardNumber)}`)
+          .pipe(catchError(
+            err => {
+              const errorKey = 'no_central_access';
+              const error = new DataServiceError(err, null);
+              if (error.errorCode === "3123") {
+                //  this.toastService.errorToast("There is no WebSocket connection for requested name [null]");
+                this.translateService.get([errorKey], {}).subscribe(
+                  (msgs: string[]) => {
+                    this.toastService.errorToast(msgs[errorKey]);
+                  }
+                ).unsubscribe();
+    
+                this.errorHandler.handleError();
+                return empty();
+              } else {
+                this.errorHandler.handleError();
+              }
+            }
+          ));
+      }
+
 }

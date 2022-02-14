@@ -146,5 +146,19 @@ export class CustomerEffects{
             })
         );
 
+        @Effect()
+        getCustomersCard$: Observable<Action> = this.actions$
+          .pipe(
+            ofType(CustomerActions.FETCH_CUSTOMERS_CARD),
+            switchMap((action: CustomerActions.FetchCustomersCard) => {
+                return toAction(
+                  this.customerDataService.getCustomersByCard(action.payload),
+                  CustomerActions.FetchCustomersCardSuccess,
+                  CustomerActions.FetchCustomersCardFail
+                );
+              }
+            )
+          );
+
        
 }

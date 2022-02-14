@@ -18,14 +18,17 @@ import { IUser } from '../../../models/IUser';
 import { ToastService } from '../toast.service';
 import { empty } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { IBarcode } from 'src/models/IBarcode';
+import { ConfigServices } from '../config-service';
 
 
 @Injectable()
 export class SPService implements OnDestroy {
 
   constructor(private http: HttpClient, private errorHandler: GlobalErrorHandler,
-    private toastService:ToastService, private util: Util,
-    private translateService:TranslateService) {
+    private toastService: ToastService, private util: Util,
+    private translateService: TranslateService,
+    private configService:ConfigServices) {
 
   }
 
@@ -85,26 +88,26 @@ export class SPService implements OnDestroy {
         catchError(
           err => {
             const error = new DataServiceError(err, null);
-            if(error.errorCode ==='8042'){
+            if (error.errorCode === '8042') {
               this.translateService.get('queue_full').subscribe(v => {
-                 this.toastService.errorToast(v); 
+                this.toastService.errorToast(v);
               });
             }
-            else if(error.errorCode == '0') {
+            else if (error.errorCode == '0') {
               this.translateService.get('generic.error.notification').subscribe(v => {
-                this.toastService.errorToast(v); 
-             });
+                this.toastService.errorToast(v);
+              });
             }
             else if (error.errorCode === '8096') {
-              this.translateService.get(['request_fail', 'messages.error.generic.with.context'],{errorCode: error.errorCode}).subscribe(errorMsgs => {
+              this.translateService.get(['request_fail', 'messages.error.generic.with.context'], { errorCode: error.errorCode }).subscribe(errorMsgs => {
                 this.toastService.errorToast(`${errorMsgs['request_fail']} ${errorMsgs['messages.error.generic.with.context']}`);
-             });
+              });
             }
-            
+
             this.errorHandler.handleError()
-            return  empty();
-          
-        }));
+            return empty();
+
+          }));
   }
 
   queueTransfer(branch: IBranch, openServicePoint: IServicePoint, ToQueue: Queue, visit: Visit, sortPolicy: string) {
@@ -175,13 +178,41 @@ export class SPService implements OnDestroy {
       );
   }
 
+  printWristband(cardNumber: any, visitId : any , ticketId : any , serviceNames : string) {
+    let body = {
+      "cardNumber" :cardNumber,
+      "visitId" : visitId,
+      "ticketId" : ticketId,
+      "serviceNames" : serviceNames,
+      "visaNumber" : ""
+    }
+    return this.http
+      .post(this.configService.getWristBandUrl(), body)
+      .pipe(
+        catchError(this.errorHandler.handleError(true))
+      );
+  }
+
   createVisit(branch: IBranch, selectedServicePoint: IServicePoint, services: IService[], notes: string, vipLevel: VIP_LEVEL, customer: ICustomer, sms: string, isTicketPrint: boolean, tempCustomer: ICustomer, notificationType: NOTIFICATION_TYPE) {
     var body = {
       "services": this.buildService(services),
       "customers": customer ? [customer.id] : [],
-      "parameters": this.buildParametersObject(sms, isTicketPrint, notes, vipLevel, tempCustomer, notificationType,null,null)
+      "parameters": this.buildParametersObject(sms, isTicketPrint, notes, vipLevel, tempCustomer, notificationType, null, null)
     }
-    
+
+    return this.http
+      .post(`${servicePoint}/branches/${branch.id}/servicePoints/${selectedServicePoint.id}/visit/create`, body)
+      .pipe(
+        catchError(this.errorHandler.handleError(true))
+      );
+  }
+  createVisitWithBarcode(branch: IBranch, selectedServicePoint: IServicePoint, services: IService[], notes: string, barcode: IBarcode, vipLevel: VIP_LEVEL, customer: ICustomer, sms: string, isTicketPrint: boolean, tempCustomer: ICustomer, notificationType: NOTIFICATION_TYPE) {
+    var body = {
+      "services": this.buildService(services),
+      "customers": customer ? [customer.id] : [],
+      "parameters": this.buildParametersObjectWithBarcode(sms, isTicketPrint, notes, barcode, vipLevel, tempCustomer, notificationType, null, null)
+    }
+
     return this.http
       .post(`${servicePoint}/branches/${branch.id}/servicePoints/${selectedServicePoint.id}/visit/create`, body)
       .pipe(
@@ -189,18 +220,18 @@ export class SPService implements OnDestroy {
       );
   }
 
-  arriveAppointment(branch: IBranch, selectedServicePoint: IServicePoint, 
+  arriveAppointment(branch: IBranch, selectedServicePoint: IServicePoint,
     services: IService[], notes: string, vipLevel: VIP_LEVEL, sms: string, isTicketPrint: boolean, notificationType: NOTIFICATION_TYPE, appointment: IAppointment) {
-    var selectedServicesWithPeopleServices = (appointment.properties.custom && JSON.parse(appointment.properties.custom).peopleServices) ? 
-    appointment.properties.custom && JSON.parse(appointment.properties.custom).peopleServices : null;
-    var numberOfCustomers = (appointment.properties.custom && JSON.parse(appointment.properties.custom).numberOfCustomers) ? 
-    appointment.properties.custom && parseInt(JSON.parse(appointment.properties.custom).numberOfCustomers) : null;
+    var selectedServicesWithPeopleServices = (appointment.properties.custom && JSON.parse(appointment.properties.custom).peopleServices) ?
+      appointment.properties.custom && JSON.parse(appointment.properties.custom).peopleServices : null;
+    var numberOfCustomers = (appointment.properties.custom && JSON.parse(appointment.properties.custom).numberOfCustomers) ?
+      appointment.properties.custom && parseInt(JSON.parse(appointment.properties.custom).numberOfCustomers) : null;
 
     var body = {
       "services": this.buildService(services),
       "customers": appointment.customers[0] ? [appointment.customers[0].id] : [],
       "appointmentId": appointment.id,
-      "parameters": this.buildParametersObject(sms, isTicketPrint, notes, vipLevel, null, notificationType,numberOfCustomers, selectedServicesWithPeopleServices)
+      "parameters": this.buildParametersObject(sms, isTicketPrint, notes, vipLevel, null, notificationType, numberOfCustomers, selectedServicesWithPeopleServices)
     }
     return this.http
       .post(`${servicePoint}/branches/${branch.id}/servicePoints/${selectedServicePoint.id}/visit/create`, body).pipe(
@@ -208,8 +239,8 @@ export class SPService implements OnDestroy {
       );
   }
 
-  private buildParametersObject(sms: string, isTicketPrint: boolean, notes: string, vipLevel: VIP_LEVEL, 
-    tempCustomer: ICustomer, notificationType: NOTIFICATION_TYPE, numberOfCustomers:number, peopleServices: string) {
+  private buildParametersObject(sms: string, isTicketPrint: boolean, notes: string, vipLevel: VIP_LEVEL,
+    tempCustomer: ICustomer, notificationType: NOTIFICATION_TYPE, numberOfCustomers: number, peopleServices: string) {
     var params = {
       "notificationType": notificationType,
       "appId": "concierge",
@@ -222,10 +253,10 @@ export class SPService implements OnDestroy {
     if (notes && notes.length > 0) {
       params["custom1"] = notes;
     }
-    if(peopleServices) {
+    if (peopleServices) {
       params["peopleServices"] = JSON.stringify(peopleServices);
     }
-    if(numberOfCustomers) {
+    if (numberOfCustomers) {
       params["numberOfCustomers"] = numberOfCustomers;
     }
     if (vipLevel !== VIP_LEVEL.NONE) {
@@ -249,6 +280,56 @@ export class SPService implements OnDestroy {
 
     if (tempCustomer && tempCustomer.dob) {
       params["primaryCustomerDateOfBirth"] = new Date(tempCustomer.dob);
+    }
+
+    return params;
+  }
+
+  private buildParametersObjectWithBarcode(sms: string, isTicketPrint: boolean, notes: string, barcode: IBarcode, vipLevel: VIP_LEVEL,
+    tempCustomer: ICustomer, notificationType: NOTIFICATION_TYPE, numberOfCustomers: number, peopleServices: string) {
+    var params = {
+      "notificationType": notificationType,
+      "appId": "concierge",
+      "print": isTicketPrint ? "1" : "0"
+    }
+
+    if (sms && sms.length > 0) {
+      params["phoneNumber"] = this.util.buildPhoneNumber(sms);
+    }
+    if (notes && notes.length > 0) {
+      params["custom1"] = notes;
+    }
+    if (peopleServices) {
+      params["peopleServices"] = JSON.stringify(peopleServices);
+    }
+    if (numberOfCustomers) {
+      params["numberOfCustomers"] = numberOfCustomers;
+    }
+    if (vipLevel !== VIP_LEVEL.NONE) {
+      params["level"] = vipLevel;
+    }
+    if ((sms && sms.length === 0) || tempCustomer && tempCustomer.phone && tempCustomer.phone.length > 0) {
+      params["phoneNumber"] = this.util.buildPhoneNumber(tempCustomer.phone);
+      params["primaryCustomerPhoneNumber"] = this.util.buildPhoneNumber(tempCustomer.phone); // TEN-298+CONCI-933
+    }
+    if (tempCustomer && tempCustomer.email && tempCustomer.email.length > 0) {
+      params["email"] = tempCustomer.email;
+      params["primaryCustomerEmail"] = tempCustomer.email; // TEN-298+CONCI-933
+    }
+    if (tempCustomer && ((tempCustomer.firstName && tempCustomer.firstName.length > 0) || (tempCustomer.lastName && tempCustomer.lastName.length > 0))) {
+      params["customers"] = tempCustomer.firstName + " " + tempCustomer.lastName;
+      // start: TEN-298+CONCI-933
+      params["primaryCustomerFirstName"] = tempCustomer.firstName;
+      params["primaryCustomerLastName"] = tempCustomer.lastName;
+      // end
+    }
+
+    if (tempCustomer && tempCustomer.dob) {
+      params["primaryCustomerDateOfBirth"] = new Date(tempCustomer.dob);
+    }
+
+    if (barcode && barcode.requird && barcode.value) {
+      params["custom2"] = barcode.value;
     }
 
     return params;
@@ -319,14 +400,14 @@ export class SPService implements OnDestroy {
   }
 
   private processVisitInfo(visit: Visit) {
- 
-      visit.customerName = visit.parameterMap.customers;
-      visit.serviceName = visit.currentVisitService.serviceExternalName;
-      visit.waitingTimeStr = this.formatTimeHHMM(visit.waitingTime);
-      visit.appointmentTime ? visit.appointmentTime = this.formatHHMMSSIntoHHMM(visit.appointmentTime.split("T")[1]) : null;
-      this.addHyphonIfInvalidValue(visit);
-      visit.visitId = visit.id;
-      visit.queueId = visit.parameterMap.currentQueueOrigId;
+
+    visit.customerName = visit.parameterMap.customers;
+    visit.serviceName = visit.currentVisitService.serviceExternalName;
+    visit.waitingTimeStr = this.formatTimeHHMM(visit.waitingTime);
+    visit.appointmentTime ? visit.appointmentTime = this.formatHHMMSSIntoHHMM(visit.appointmentTime.split("T")[1]) : null;
+    this.addHyphonIfInvalidValue(visit);
+    visit.visitId = visit.id;
+    visit.queueId = visit.parameterMap.currentQueueOrigId;
 
     return visit;
   }

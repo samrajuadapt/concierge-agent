@@ -1,5 +1,16 @@
 @import '../../../../styles/base/_component-manifest.scss';
 
+.qm-profile_icon {
+    width: 130px;
+    padding: 3px;
+    height: auto;
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-bottom: 0px;
+    border-radius: 65px;
+    box-shadow: 0px 4px 10px 0px rgba(0.5, 0.5, 0.5, 0.2);
+}
+
 
 // placeholder styles
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */

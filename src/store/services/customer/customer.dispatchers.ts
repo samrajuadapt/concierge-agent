@@ -1,63 +1,70 @@
 import { Injectable } from "@angular/core";
 import { IAppState } from "../../reducers";
-import { Store} from "@ngrx/store"
+import { Store } from "@ngrx/store"
 import * as CustomerAction from '../../actions'
-import {ICustomer} from "../../../models/ICustomer"
+import { ICustomer } from "../../../models/ICustomer"
 
 @Injectable()
-export class CustomerDispatchers{
-    constructor(private store: Store<IAppState>){}
+export class CustomerDispatchers {
+    constructor(private store: Store<IAppState>) { }
 
-    fetchCustomers(searchText:string){
+    fetchCustomers(searchText: string) {
         this.store.dispatch(new CustomerAction.FetchCustomers(searchText));
     }
 
-    fetchAppointmentCustomers(searchText:string){
+    fetchAppointmentCustomers(searchText: string) {
         this.store.dispatch(new CustomerAction.FetchAppointmentCustomers(searchText));
     }
 
-    resetCustomers(){
+    resetCustomers() {
         this.store.dispatch(new CustomerAction.ResetCustomers);
     }
 
-    selectCustomer(customer:ICustomer){
+    selectCustomer(customer: ICustomer) {
         this.store.dispatch(new CustomerAction.SelectCustomer(customer));
     }
-    editCustomerMode(state:boolean){
+    editCustomerMode(state: boolean) {
         this.store.dispatch(new CustomerAction.EditCustomer(state));
     }
- 
-    createCustomer(customer:ICustomer){
+
+    createCustomer(customer: ICustomer) {
         this.store.dispatch(new CustomerAction.CreateCustomer(customer));
     }
 
-    updateCustomer(customer:ICustomer){
+    updateCustomer(customer: ICustomer) {
         this.store.dispatch(new CustomerAction.UpdateCustomer(customer));
     }
 
-    resetCurrentCustomer(){
+    resetCurrentCustomer() {
         this.store.dispatch(new CustomerAction.ResetCurrentCustomer);
-    
+
     }
 
-    updateCustomerSearchText(searchText:string){
+    updateCustomerSearchText(searchText: string) {
         this.store.dispatch(new CustomerAction.UpdateCustomerSearchText(searchText));
     }
 
-    resetCustomerSearchText(){
+    resetCustomerSearchText() {
         this.store.dispatch(new CustomerAction.ResetCustomerSearchText);
     }
 
-    setTempCustomers(customer:ICustomer){
+    setTempCustomers(customer: ICustomer) {
         this.store.dispatch(new CustomerAction.SetTempCustomer(customer));
     }
 
-    resetTempCustomer(){
+    resetTempCustomer() {
         this.store.dispatch(new CustomerAction.ResetTempCustomer());
     }
 
-    updateCustomerPartially(customer:ICustomer){
+    updateCustomerPartially(customer: ICustomer) {
         this.store.dispatch(new CustomerAction.UpdateCustomerPartially(customer));
+    }
+
+    fetchCustomersByCard(cardNumber: string) {
+        this.store.dispatch(new CustomerAction.FetchCustomersCard(cardNumber));
+    }
+    resetCustomerCard() {
+        this.store.dispatch(new CustomerAction.ResetCustomersCard);
     }
 
 }

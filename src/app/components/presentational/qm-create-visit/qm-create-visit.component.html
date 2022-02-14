@@ -1,5 +1,5 @@
 <qm-flow #f [FlowName] ="'create_visit_single_line'">
-  <qm-flow-panel #ps [isActive]="true" [isContentVisible]="true" [isHeaderVisible]="true" [title]="'label.specify_service'">
+  <!-- <qm-flow-panel #ps [isActive]="true" [isContentVisible]="true" [isHeaderVisible]="true" [title]="'label.specify_service'">
     <qm-flow-panel-header (click)="f.panelHeaderClick(ps)" (onFlowExit)="f.onFlowExit()">
       <qm-flow-panel-title>{{ 'label.specify_service' | translate}}</qm-flow-panel-title>
       <qm-flow-panel-result *ngIf="selectedServices.length === 1">{{  selectedServices[0].internalName }}</qm-flow-panel-result>
@@ -7,6 +7,24 @@
     </qm-flow-panel-header>
     <qm-flow-panel-content>
       <qm-select-service (onFlowNext)="setPanelClick()" [flowType]="flowType"></qm-select-service>
+    </qm-flow-panel-content>
+  </qm-flow-panel> -->
+
+  <qm-flow-panel #pct [isActive]="true" [isContentVisible]="true" [isHeaderVisible]="true" [title]="'label.customer.type.customer'">
+    <qm-flow-panel-header (click)="f.panelHeaderClick(pct)" (onFlowExit)="f.onFlowExit()">
+      <qm-flow-panel-title>{{ 'label.customer.type.heading' | translate}}</qm-flow-panel-title>
+    </qm-flow-panel-header>
+    <qm-flow-panel-content>
+      <qm-customer-type (onFlowNext)="f.onFlowNext(psg)" [flowType]="flowType"></qm-customer-type>
+    </qm-flow-panel-content>
+  </qm-flow-panel>
+
+  <qm-flow-panel #psg  [isHeaderVisible]="true" [title]="'label.service.group'">
+    <qm-flow-panel-header (click)="f.panelHeaderClick(psg)" (onFlowExit)="f.onFlowExit()">
+      <qm-flow-panel-title>{{ 'label.service.group' | translate}}</qm-flow-panel-title>
+    </qm-flow-panel-header>
+    <qm-flow-panel-content>
+     <qm-service-group  (onFlowNext)="f.onFlowNext(pc)" [flowType]="flowType"></qm-service-group>
     </qm-flow-panel-content>
   </qm-flow-panel>
 

@@ -1,0 +1,161 @@
+@import "../../../../styles/base/_component-manifest.scss";
+
+:host(.qm-service-page) {
+  .qm-flow-sub-header__right {
+    align-items: flex-end;
+    margin-left: 16px;
+  }
+
+  .qm-checkbox__selector-icon-text {
+    margin-left: 0.5rem;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.82);
+  }
+
+  .qm-checkbox-label {
+    padding-right: 1rem;
+    z-index: 400;
+  }
+}
+
+.qm-white-container {
+  background: #ffffff;
+}
+
+.qm-pannel-inner-container {
+  background: #fafafa;
+  min-height: calc(100vh - 162px);
+  padding: 30px 24px;
+}
+
+@media screen and (max-width: 800px) {
+  .qm-profile {
+    &-content {
+      margin-top: 154px;
+      width: 70%;
+    }
+  }
+}
+
+@include qm-lg {
+  // .qm-pannel-inner-container {
+  //   margin: 0 126px;
+  // }
+}
+@include qm-md {
+  // .qm-pannel-inner-container {
+  //   margin: 0 126px;
+  // }
+}
+@include qm-sm {
+  // .qm-pannel-inner-container {
+  //   margin: 0 64px;
+  // }
+  .qm-profile {
+    &-content {
+      width: 40%;
+    }
+  }
+}
+@include qm-xs {
+  .qm-pannel-inner-container {
+    margin: 0;
+  }
+  .qm-profile {
+    &-content {
+      width: 70%;
+    }
+  }
+}
+
+.qm-profile {
+  display: flex;
+  min-height: 70vh;
+  flex-direction: column;
+  background: $white !important;
+  @include qm-background;
+  &-cancel {
+    cursor: pointer;
+  }
+  &-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: rem(50px) auto 0 auto;
+    border-radius: 4px;
+    background-color: $white;
+    color: $dark-transparent82;
+    padding: 2rem;
+    // width: 40%;
+    position: relative;
+    &__title {
+      margin-bottom: 2rem;
+      font-size: 28px;
+      letter-spacing: -0.2px;
+      font-weight: 300;
+      text-align: left;
+      @include add-text-ellipsis;
+
+      @at-root [dir="rtl"] & {
+        text-align: right;
+      }
+    }
+    &-row {
+      flex-direction: row;
+    }
+  }
+}
+
+.qm-view-hide {
+  display: none;
+}
+.qm-save-button {
+  margin-top: 20px;
+}
+.qm-branch-dd {
+  margin-bottom: 2rem;
+}
+
+.qm-checkbox__selector-icon-text {
+  display: flex;
+  margin: 3px 15px;
+}
+
+.qm-check-box-content {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 20px;
+  overflow-x: auto;
+}
+
+.qm-right {
+  flex: 25%;
+  float: left;
+  color: #1a1c34;
+  font-weight: bold;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.qm-box {
+  margin: 15px 0px;
+}
+
+[dir="rtl"] {
+  .qm-use-as-default__checkbox {
+    margin-left: 0.7rem;
+  }
+}
+
+.btn-wrap {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+}
+
+

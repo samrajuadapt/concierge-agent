@@ -47,6 +47,11 @@ export const getTempCustomer= createSelector(
     (state:ICustomerState)=> state.tempCustomer
 )
 
+const getAllCardCustomers = createSelector(
+    getCustomerState,
+    (state:ICustomerState)=> state.cardCustomers
+  );
+
 @Injectable()
 export class CustomerSelector{
     constructor(private store: Store<IAppState>){}
@@ -59,4 +64,5 @@ export class CustomerSelector{
     searchText$ = this.store.select(getSearchText);
     tempCustomer$ = this.store.select(getTempCustomer);
     appointmentSearchCustomers$ = this.store.select(getAppointmentSearchCustomers);
+    cardCustomer$ = this.store.select(getAllCardCustomers);
 }

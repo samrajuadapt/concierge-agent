@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ServicePointSelectors, ServiceSelectors, CustomerSelector, TimeslotDispatchers } from 'src/store/services';
+import { ServicePointSelectors, ServiceSelectors, CustomerSelector, TimeslotDispatchers, CustomerTypeDispatchers,ErpBranchDispatcher,VariablesDispathers, CustomerDispatchers, EmiratesIdDispatchers
+ } from 'src/store/services';
 import { Subscription } from 'rxjs';
 import { FLOW_TYPE } from '../../../../util/flow-state';
 import { IService } from '../../../../models/IService';
@@ -41,7 +42,12 @@ export class QmCreateVisitComponent implements OnInit {
     private serviceSelectors: ServiceSelectors,
     private customerSelectors: CustomerSelector,
     private localStorage: LocalStorage,
-    private timeSlotDispatchers: TimeslotDispatchers
+    private timeSlotDispatchers: TimeslotDispatchers,
+    private customerTypeDispatchers:CustomerTypeDispatchers,
+    private erpBranchDispatcher:ErpBranchDispatcher,
+    private variableDisaptcher:VariablesDispathers,
+    private customerDispatcher:CustomerDispatchers,
+    private emiratesIdDispatcher:EmiratesIdDispatchers
   ) {
 
     const servicePointsSubscription = this.servicePointSelectors.uttParameters$.subscribe((params) => {
@@ -80,6 +86,11 @@ export class QmCreateVisitComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.emiratesIdDispatcher.resetEmirateId()
+    this.customerDispatcher.resetCustomerCard()
+    this.customerTypeDispatchers.fetchCustomerType()
+    this.erpBranchDispatcher.fetchErpBranches()
+    this.variableDisaptcher.fetchVariables()
   }
 
   ngOnDestroy() {

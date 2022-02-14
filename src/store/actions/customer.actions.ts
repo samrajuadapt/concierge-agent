@@ -29,6 +29,11 @@ export const FETCH_APPOINTMENT_CUSTOMERS = '[Customer] FETCH_APPOINTMENT_CUSTOME
 export const FETCH_APPOINTMENT_CUSTOMERS_SUCCESS = '[Customer] FETCH_APPOINTMENT_CUSTOMERS_SUCCESS';
 export const FETCH_APPOINTMENT_CUSTOMERS_FAIL = '[Customer] FETCH_APPOINTMENT_CUSTOMERS_FAIL';
 
+export const FETCH_CUSTOMERS_CARD = '[Customer] FETCH_CUSTOMERS_CARD';
+export const FETCH_CUSTOMERS_CARD_FAIL = '[Customer] FETCH_CUSTOMERS_CARD_FAIL';
+export const FETCH_CUSTOMERS_CARD_SUCCESS = '[Customer] FETCH_CUSTOMERS_CARD_SUCCESS';
+export const RESET_CUSTOMERS_CARD = '[Customer] RESET_CUSTOMERS_CARD_';
+
 export class UpdateCustomerSearchText implements Action{
     readonly type = UPDATE_CUSTOMER_SEARCH_TEXT;
     constructor(public payload:string){}
@@ -134,6 +139,24 @@ export class UpdateCUstomerPartiallySuccess implements Action{
     constructor (public payload:ICustomer){}
 }
 
+export class FetchCustomersCard implements Action {
+    readonly type = FETCH_CUSTOMERS_CARD;
+    constructor(public payload: string) { }
+  }
+  export class FetchCustomersCardFail implements Action {
+    readonly type = FETCH_CUSTOMERS_CARD_FAIL;
+    constructor(public payload: Object) { }
+  }
+  
+  export class FetchCustomersCardSuccess implements Action {
+    readonly type = FETCH_CUSTOMERS_CARD_SUCCESS;
+    constructor(public payload: ICustomer[]) { }
+  }
+  
+  export class ResetCustomersCard implements Action {
+    readonly type = RESET_CUSTOMERS_CARD;
+  }
+
 
 export type AllCustomerActions = UpdateCustomerSearchText | ResetCustomerSearchText |SelectCustomer|EditCustomer |ResetCurrentCustomer
             |FetchCustomers|FetchCustomersFail|FetchCustomersSuccess | ResetCustomers| CreateCustomer | CreateCustomerFail | CreateCustomerSuccess
@@ -142,4 +165,8 @@ export type AllCustomerActions = UpdateCustomerSearchText | ResetCustomerSearchT
             |FetchAppointmentCustomers | FetchAppointmentCustomersSuccess | FetchAppointmentCustomersFail
             | UpdateCustomerPartially
             | UpdateCustomerPartiallyFail
-            | UpdateCUstomerPartiallySuccess ;
+            | UpdateCUstomerPartiallySuccess
+            | FetchCustomersCard
+    | FetchCustomersCardSuccess
+    | FetchCustomersCardFail
+    |ResetCustomersCard ;

@@ -5,7 +5,7 @@ import { CREATE_VISIT, CREATE_APPOINTMENT, ARRIVE_APPOINTMENT } from "./../../..
 import {
   ServicePointSelectors, CustomerSelector, ReserveSelectors, DataServiceError, TimeslotSelectors, BranchSelectors,
   ServiceSelectors, InfoMsgDispatchers, CustomerDispatchers, NoteSelectors, NoteDispatchers, CalendarBranchDispatchers,
-  CalendarServiceDispatchers, ArriveAppointmentSelectors, UserSelectors, CalendarBranchSelectors, CalendarServiceSelectors, SystemInfoSelectors, ReserveDispatchers
+  CalendarServiceDispatchers, ArriveAppointmentSelectors, UserSelectors, CalendarBranchSelectors, CalendarServiceSelectors, SystemInfoSelectors, ReserveDispatchers, BarcodeSelectors
 } from "../../../../store";
 import { IBranch } from './../../../../models/IBranch';
 import { IUTTParameter } from "../../../../models/IUTTParameter";
@@ -33,6 +33,9 @@ import { QueueService } from "../../../../util/services/queue.service";
 import { IBookingInformation } from "src/models/IBookingInformation";
 import { DEFAULT_LOCALE } from "src/constants/config";
 import { GlobalErrorHandler } from "src/util/services/global-error-handler.service";
+import { BroadcastService } from "src/util/services/brodcast.service";
+import { BROADCAST } from "src/util/broadcast-state";
+import { IBarcode } from "src/models/IBarcode";
 
 @Component({
   selector: "qm-checkout-view",
@@ -77,12 +80,13 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   vipLevel3Checked: boolean = false;
   isMultiBranchEnabled: boolean = true;
   isAppointmentStatEventEnable = false;
+  printWristBandSelected: boolean = true
 
   isCreateVisit: boolean = false;
   isCreateAppointment: boolean = false;
   isArriveAppointment: boolean = false;
   hideCustomer: boolean = false;
-  hideCustomerdetails:boolean = false;
+  hideCustomerdetails: boolean = false;
   themeColor: string = "#a9023a";
   whiteColor: string = "#ffffff";
   blackColor: string = "#000000";
@@ -127,6 +131,8 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   VipButton2Focused: boolean;
   VipButton3Focused: boolean;
 
+  currentBarcode: IBarcode
+
   constructor(
     private servicePointSelectors: ServicePointSelectors,
     private customerSelector: CustomerSelector,
@@ -155,7 +161,9 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     private systemInfoSelectors: SystemInfoSelectors,
     private queueService: QueueService,
     private reserveDispatchers: ReserveDispatchers,
-    private errorHandler: GlobalErrorHandler
+    private errorHandler: GlobalErrorHandler,
+    private barcodeSelectors: BarcodeSelectors,
+    private broadcast: BroadcastService
   ) {
     this.userDirection$ = this.userSelectors.userDirection$;
 
@@ -304,11 +312,13 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     }
 
     if (this.flowType === FLOW_TYPE.ARRIVE_APPOINTMENT && this.selectedAppointment) {
+      this.printWristBandSelected = false
       this.genarateAppointmentData();
       this.ButtonSelectedByUtt();
     }
 
     if (this.flowType === FLOW_TYPE.CREATE_APPOINTMENT) {
+      this.printWristBandSelected = false
       const branchSubscription = this.CalendarBranchSelectors.selectedBranch$.subscribe((branch) => {
         this.customerDispatcher.resetCurrentCustomer();
         this.resetViewData();
@@ -333,6 +343,23 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.add(servicePointsSubscription);
+
+    const noteSubscriptions = this.noteSelectors.getNote$.subscribe((text) => {
+      this.noteTextStr = text
+    })
+    this.subscriptions.add(noteSubscriptions)
+
+    const broadcastSubscriptions = this.broadcast.subscribe(BROADCAST.BARCODE_UPDATE, isUpdated => {
+      if (isUpdated) {
+        this.barcodeSelectors.barcode$.subscribe(barcode => {
+          console.log("Barcode",barcode);
+          
+          this.currentBarcode = barcode;
+        }).unsubscribe()
+      }
+    })
+
+    this.subscriptions.add(broadcastSubscriptions)
 
   }
 
@@ -362,6 +389,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     this.ticketlessColor = this.whiteColor;
     this.noteTextStr = '';
     this.buttonEnabled = false;
+    this.printWristBandSelected = true
     this.ButtonSelectedByUtt();
   }
 
@@ -534,6 +562,9 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
       }
     }
 
+  }
+  onPrintWristBand() {
+    this.printWristBandSelected = !this.printWristBandSelected
   }
 
   onEmailSelected() {
@@ -750,12 +781,16 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
 
   setCreateVisit() {
     this.loading = true;
-    this.spService.createVisit(this.selectedBranch, this.selectedServicePoint, this.selectedServices, this.noteTextStr, this.selectedVIPLevel, this.selectedCustomer, this.customerSms, this.ticketSelected, this.tempCustomer, this.getNotificationType()).subscribe((result) => {
-      this.loading = false;
-      this.showSuccessMessage(result);
+    this.spService.createVisitWithBarcode(this.selectedBranch, this.selectedServicePoint, this.selectedServices, this.noteTextStr, this.currentBarcode, this.selectedVIPLevel, this.selectedCustomer, this.customerSms, this.ticketSelected, this.tempCustomer, this.getNotificationType()).subscribe((result) => {
       this.saveFrequentService();
-      this.onFlowExit.emit();
       this.queueService.fetechQueueInfo();
+      if (this.printWristBandSelected) {
+        this.printWristBand(result)
+      } else {
+        this.loading = false;
+        this.showSuccessMessage(result);
+        this.onFlowExit.emit();
+      }
     }, error => {
       const err = new DataServiceError(error, null);
       if (err.errorCode === '0') {
@@ -796,6 +831,21 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
         this.onFlowExit.emit();
         this.queueService.fetechQueueInfo();
       })
+  }
+
+  printWristBand(visit: any) {
+    this.loading = true;
+    this.spService.printWristband(this.selectedCustomer.cardNumber, visit.id, visit.ticketId, this.noteTextStr).subscribe((result) => {
+      this.loading = false;
+      this.showSuccessMessage(visit);
+      this.onFlowExit.emit();
+    }, error => {
+      this.loading = false;
+      this.showSuccessMessage(visit);
+      this.showErrorMessage(error);
+      this.saveFrequentService();
+      this.onFlowExit.emit()
+    })
   }
 
   showSuccessMessage(result: any) {
@@ -1138,6 +1188,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   ButtonSelectedByUtt() {
     switch (this.flowType) {
       case FLOW_TYPE.CREATE_APPOINTMENT:
+        
         if (this.emailActionEnabled && !this.smsActionEnabled && !this.isNoNotificationEnabled) {
           this.onEmailSelected();
         } else if (!this.emailActionEnabled && this.smsActionEnabled && !this.isNoNotificationEnabled) {

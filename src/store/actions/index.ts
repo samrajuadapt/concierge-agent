@@ -37,4 +37,9 @@ export * from './flow-open.actions';
 export * from './autoclose-status.actions';
 export * from './jwtToken.actions';
 export * from './language.actions';
+export * from './customer-type.actions';
+export * from './erp-branches.actions';
+export * from './barcode.action';
+export * from './variables.actions';
+export * from './emirates-id.actions';
 

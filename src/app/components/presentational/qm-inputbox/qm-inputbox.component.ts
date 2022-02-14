@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { AutoClose } from '../../../../util/services/autoclose.service';
-import { UserSelectors, CustomerDispatchers, CustomerDataService, CustomerSelector, ServicePointSelectors, SystemInfoSelectors } from '../../../../store';
+import { UserSelectors, CustomerDispatchers, CustomerDataService, CustomerSelector, ServicePointSelectors, SystemInfoSelectors, BarcodeSelectors, EmiratesIdDispatchers, EmiratesIdSelectors, BarcodeDispatchers } from '../../../../store';
 import { FormGroup, FormControl, FormBuilder, FormArray, FormGroupDirective, Validators, AbstractControl, } from '@angular/forms';
 import { ICustomer } from '../../../../models/ICustomer';
 import { first } from '../../../../../node_modules/rxjs/operators';
@@ -14,6 +14,13 @@ import { IUTTParameter } from 'src/models/IUTTParameter';
 import { LanguageDispatchers, LanguageSelectors } from 'src/store/services/language';
 import { ILanguage } from 'src/models/ILanguage';
 import { FLOW_TYPE } from 'src/util/flow-state';
+import { BroadcastService } from 'src/util/services/brodcast.service';
+import { IBarcode } from 'src/models/IBarcode';
+import { BROADCAST } from 'src/util/broadcast-state';
+import { USER_IMG } from 'src/util/url-helper';
+import { IEidCustomer } from 'src/models/IEidCustomer';
+import { ConfigServices } from 'src/util/services/config-service';
+import { WebsocketService } from 'src/util/services/websocket.service';
 
 @Component({
   selector: 'qm-inputbox',
@@ -64,6 +71,13 @@ export class QmInputboxComponent implements OnInit {
 
   firstName: string
 
+  barcodeRequired = false;
+  currentBarcode: IBarcode
+
+  profileImage = USER_IMG
+  currentEidCustomer: IEidCustomer;
+  isCustomerFromCard = false
+
   private dateLabelKeys: string[] = [
     'calendar.month.none',
     'calendar.month.january',
@@ -94,7 +108,14 @@ export class QmInputboxComponent implements OnInit {
     private translateService: TranslateService,
     public LanguageSelectors: LanguageSelectors,
     public languageDispatchers: LanguageDispatchers,
-    public systemInfoSelectors: SystemInfoSelectors
+    public systemInfoSelectors: SystemInfoSelectors,
+    private barcodeSelectors:BarcodeSelectors,
+    private barcodeDispatchers:BarcodeDispatchers,
+    private broadcast:BroadcastService,
+    private emiratesIdDispatchers:EmiratesIdDispatchers,
+    private emiratesIdSelectors:EmiratesIdSelectors,
+    private configService:ConfigServices,
+    private websocket:WebsocketService
   ) {
     // this.editCustomer$ = this.customerSelectors.editCustomer$;
     this.userDirection$ = this.userSelectors.userDirection$;
@@ -103,6 +124,18 @@ export class QmInputboxComponent implements OnInit {
 
   ngOnInit() {
     // get country code
+    const broadcastSubscriptions = this.broadcast.subscribe(BROADCAST.BARCODE_UPDATE,isUpdated=>{
+      if(isUpdated){
+        this.barcodeSelectors.barcode$.subscribe(barcode => {
+          this.currentBarcode = barcode;
+          this.barcodeRequired = this.currentBarcode.requird
+          this.customerCreateForm.patchValue({
+            barcode: this.currentBarcode.value != undefined ? this.currentBarcode.value : "No Barcode"
+          })
+        }).unsubscribe()
+      }
+    })
+    this.subscriptions.add(broadcastSubscriptions)
     const servicePointsSubscription = this.servicePointSelectors.uttParameters$.subscribe((params) => {
       if (params) {
         this.countrycode = params.countryCode;
@@ -149,6 +182,7 @@ export class QmInputboxComponent implements OnInit {
           lastName: this.currentCustomer.lastName,
           phone: this.currentCustomer.properties.phoneNumber,
           email: this.currentCustomer.properties.email,
+          card: this.currentCustomer.cardNumber,
           dateOfBirth: {
             month: this.date.month ? this.date.month : null,
             day: this.date.day ? this.date.day : '',
@@ -162,6 +196,7 @@ export class QmInputboxComponent implements OnInit {
           firstName: '',
           lastName: '',
           phone: this.countrycode,
+          card:'',
           email: '',
           dateOfBirth: {
             month: null,
@@ -174,12 +209,62 @@ export class QmInputboxComponent implements OnInit {
     });
     this.subscriptions.add(CurrentcustomerSubscription);
 
-
-
     const editModeSubscription = this.customerSelectors.editCustomerMode$.subscribe((status) => {
       this.editMode = status;
     })
     this.subscriptions.add(editModeSubscription);
+
+    const eidCustomerSubscription = this.emiratesIdSelectors.emiratesIdCustomer$.subscribe(eidCustomer => {
+      if (eidCustomer.cardNumber != undefined) {
+        this.currentEidCustomer = eidCustomer
+        this.customerDispatchers.fetchCustomersByCard(eidCustomer.cardNumber)
+      }
+    })
+    this.subscriptions.add(eidCustomerSubscription)
+
+    const searchEidCustomerSubscriptions = this.customerSelectors.cardCustomer$.subscribe(customers => {
+      if (customers.length > 0) {
+        this.isCustomerFromCard = true
+        this.currentCustomer = customers[0]
+        this.setCustomerData()
+        // this.customerDispatchers.selectCustomer(this.currentCustomer)
+      } else {
+        this.setEidCustomer(this.currentEidCustomer)
+      }
+    })
+    this.subscriptions.add(searchEidCustomerSubscriptions)
+
+    const websocketsubscriptions = this.websocket.connect(this.configService.getWebSocketUrl()).subscribe(
+      (response: MessageEvent) => {
+        let data = JSON.parse(response.data);
+        console.log("websocket data => "+ data);
+        let splitData = data.split("\n");
+
+        console.log(splitData);
+        let firstLine = splitData[0].split(" ");
+        let secondLine = splitData[1].split(":");
+        let thirdLine = splitData[2].split(":");
+        let fourthLine = splitData[3].split(":");
+        let fifthLine = splitData[4].split(":");
+        let sixthLine = splitData[5].split(":");
+      
+        let firstName = firstLine[0];
+        let lastName = firstLine[firstLine.length - 1];
+        let emiratesId = secondLine[1];
+        let nationality = thirdLine[1];
+        let dob = fourthLine[1];
+        let expiryDate = fifthLine[1];
+        let cardNumber = sixthLine[1];
+
+        this.customerCreateForm.patchValue({
+          firstName: firstName,
+          lastName: lastName,
+          card: cardNumber,
+          dateOfBirth: dob
+        })
+      }
+    );
+    this.subscriptions.add(websocketsubscriptions)
 
 
     // Validators
@@ -206,6 +291,8 @@ export class QmInputboxComponent implements OnInit {
       lastName: new FormControl('', Validators.required, whiteSpaceValidator),
       phone: new FormControl(this.countrycode, phoneValidators),
       email: new FormControl('', emailValidators),
+      barcode: new FormControl('',Validators.required, whiteSpaceValidator),
+      card: new FormControl('',Validators.required, whiteSpaceValidator),
       dateOfBirth: this.fb.group(
         {
           month: [null, monthValidators],
@@ -292,12 +379,15 @@ export class QmInputboxComponent implements OnInit {
     if (this.customerCreateForm !== undefined) {
       this.customerCreateForm.markAsPristine();
       this.customerCreateForm.controls.dateOfBirth.markAsPristine();
+      this.profileImage = USER_IMG
 
       this.customerCreateForm.patchValue({
         firstName: '',
         lastName: '',
         phone: this.countrycode,
         email: '',
+        barcode: '',
+        card:'',
         dateOfBirth: {
           month: null,
           day: '',
@@ -337,16 +427,19 @@ export class QmInputboxComponent implements OnInit {
     const customerSave: ICustomer = {
       firstName: this.customerCreateForm.value.firstName.trim(),
       lastName: this.customerCreateForm.value.lastName.trim(),
+      cardNumber:this.customerCreateForm.value.card.trim(),
       properties: this.customerCreateForm.value.language
         ? {
           phoneNumber: this.customerCreateForm.value.phone.trim(),
           email: this.customerCreateForm.value.email.trim(),
           dateOfBirth: this.getDateOfBirth(),
+          profileImage: this.profileImage,
           lang: this.customerCreateForm.value.language,
         }
         : {
           phoneNumber: this.customerCreateForm.value.phone.trim(),
           email: this.customerCreateForm.value.email.trim(),
+          profileImage: this.profileImage,
           dateOfBirth: this.getDateOfBirth(),
         }
     };
@@ -485,6 +578,9 @@ export class QmInputboxComponent implements OnInit {
   }
 
   update() {
+    this.currentBarcode.value = this.customerCreateForm.value.barcode
+    this.barcodeDispatchers.saveBarcode(this.currentBarcode)
+    this.broadcast.boradcast(BROADCAST.BARCODE_UPDATE,true)
     if (
       this.customerCreateForm.valid &&
       (this.currentCustomer.firstName != this.customerCreateForm.value.firstName ||
@@ -500,6 +596,9 @@ export class QmInputboxComponent implements OnInit {
     ) {
       this.accept();
     } else if (this.customerCreateForm.valid && this.customerCreateForm.dirty) {
+      if(this.isCustomerFromCard){
+        this.customerDispatchers.selectCustomer(this.preparedCustomer());
+      }
       this.onFlowNext.emit();
       this.customerCreateForm.markAsPristine();
     }
@@ -512,6 +611,8 @@ export class QmInputboxComponent implements OnInit {
       lastName: this.currentCustomer.lastName,
       phone: this.currentCustomer.properties.phoneNumber,
       email: this.currentCustomer.properties.email,
+      barcode:this.currentBarcode.value,
+      card:this.currentCustomer.cardNumber,
       dateOfBirth: {
         month: this.date.month ? this.date.month : null,
         day: this.date.day ? this.date.day : '',
@@ -529,6 +630,8 @@ export class QmInputboxComponent implements OnInit {
       case "lastName": this.customerCreateForm.patchValue({ lastName: '' }); break;
       case "phone": this.customerCreateForm.patchValue({ phone: '' }); break;
       case "email": this.customerCreateForm.patchValue({ email: '' }); break;
+      case "barcode": this.customerCreateForm.patchValue({ barcode: '' }); break;
+      case "card": this.customerCreateForm.patchValue({ card: '' }); break;
 
     }
   }
@@ -564,6 +667,102 @@ export class QmInputboxComponent implements OnInit {
   }
   languageFiledSelection(value: boolean) {
     this.isLanguageFocus = value;
+  }
+
+  fetchEid() {
+    this.emiratesIdDispatchers.fetchEmiratesId()
+  }
+
+  setCustomerData() {
+    if (this.currentCustomer) {
+      const dob: any = this.currentCustomer.properties.dateOfBirth;
+      this.date = this.formatDate(
+        dob.substring(8, 10),
+        parseInt(dob.substring(5, 7)) - 1,
+        dob.substring(0, 4)
+      );
+      this.profileImage = this.getProfileImage(this.currentCustomer.properties.profileImage)
+      this.customerCreateForm.patchValue({
+        firstName: this.currentCustomer.firstName,
+        lastName: this.currentCustomer.lastName,
+        phone: this.currentCustomer.properties.phoneNumber,
+        email: this.currentCustomer.properties.email,
+        card:this.currentCustomer.cardNumber,
+        dateOfBirth: {
+          month: this.date.month ? this.date.month : null,
+          day: this.date.day ? this.date.day : '',
+          year: this.date.year ? this.date.year : ''
+        },
+        language: this.currentCustomer.properties.lang
+      })
+      this.customerCreateForm.markAsDirty()
+    } else if ((this.customerCreateForm !== undefined) && !this.currentCustomer) {
+
+      this.customerCreateForm.patchValue({
+        firstName: '',
+        lastName: '',
+        phone: this.countrycode,
+        email: '',
+        card:'',
+        dateOfBirth: {
+          month: null,
+          day: '',
+          year: ''
+        },
+        language: ''
+      })
+    }
+  }
+
+  setEidCustomer(eidCustomer: IEidCustomer) {
+    if (eidCustomer != undefined) {
+      this.profileImage = this.getProfileImage(eidCustomer.photo)
+      var phNumber = "";
+      if (eidCustomer.phoneNumber.startsWith("0") && eidCustomer.phoneNumber.length == 10) {
+        phNumber = "971";
+        phNumber += eidCustomer.phoneNumber.substring(1, eidCustomer.phoneNumber.length);
+      } else {
+        phNumber = eidCustomer.phoneNumber
+      }
+      var dobDate: Date;
+      let dob = eidCustomer.dateOfBirth.split('-');
+      if (this.isValidDate(eidCustomer.dateOfBirth)) {
+        dobDate = new Date(dob[0] + "-" + dob[1] + "-" + dob[2]);
+      } else {
+        dobDate = new Date(dob[1] + "-" + dob[0] + "-" + dob[2]);
+      }
+
+      this.date = this.formatDate(
+        dobDate.getDate(),
+        dobDate.getMonth(),
+        dobDate.getFullYear()
+      );
+
+      this.customerCreateForm.patchValue({
+        firstName: eidCustomer.firstName,
+        lastName: eidCustomer.lastName,
+        phone: phNumber,
+        email: "",
+        card: eidCustomer.cardNumber,
+        dateOfBirth: {
+          day: this.date.day ? this.date.day : null,
+          month: this.date.month ? this.date.month : '',
+          year: this.date.year ? this.date.year : ''
+        },
+        language: "en"
+      })
+    }
+  }
+
+  isValidDate(date: any) {
+    var date_regex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+    return date_regex.test(date)
+  }
+  getProfileImage(base64: string) {
+    if (base64.includes('data:image/png;base64,')) {
+      return base64
+    }
+    return `data:image/png;base64,${base64}`
   }
 }
 

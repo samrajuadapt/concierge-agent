@@ -1,0 +1,55 @@
+<div id="main-container" class="qm-pannel-container" dir="{{ userDirection$ | async}}">
+    <div class="qm-pannel-inner-container">
+        <div>
+            <h1 class="qm-flow-header" tabindex="-1" id="panel-title">
+                {{ ('label.customer.type.heading') | translate}}</h1>
+        </div>
+        <div class="qm-profile " dir="{{userDirection$ | async}}">
+            <div class="qm-profile-content">
+                <div class="qm-dropdown-content">
+                    <div class="qm-dropdown-heading">
+                        {{ "label.customer.type.customer" | translate }}
+                    </div>
+                    <qm-drop-down #ct class="qm-branch-dd" [searchPlaceHolder]="'label.customer.type.customer'"
+                        [items]="customerTypes" itemType="customerType" [caption]="selectedCustomerType?.name"
+                        [isItemSelected]="selectedCustomerType?.id > -1" labelProperty="name" [isTopView]="true"
+                        (itemClick)="onCustomerTypeSelect($event)">
+                    </qm-drop-down>
+                </div>
+
+                <div class="qm-dropdown-content" [ngClass]="{'qm-view-hide':!viewStatus.isCorporateSelected}">
+                    <div class="qm-dropdown-heading">
+                        {{ "label.customer.type.company" | translate }}
+                    </div>
+                    <qm-drop-down #cb class="qm-branch-dd" [searchPlaceHolder]="'label.branch.search'"
+                        [items]="erpBranches" itemType="erpBranch" [caption]="selectedErpBranch?.name"
+                        [isItemSelected]="selectedErpBranch?.id > -1" labelProperty="name" [isTopView]="true"
+                        (itemClick)="onCompanyTypeSelect($event)">
+                    </qm-drop-down>
+                </div>
+
+                <div class="qm-dropdown-content" [ngClass]="{'qm-view-hide':!viewStatus.isCorporateSelected}">
+                    <div class="qm-dropdown-heading">
+                        {{ "label.customer.type.number" | translate }}
+                    </div>
+                    <input class="qm-input-box__input" type="number" id='numberOfCustomer' name='numberOfCustomer'
+                        (keyup)="onNumberOfCustomerChange($event)">
+                </div>
+
+                <div class="qm-dropdown-content" [ngClass]="{'qm-view-hide':!viewStatus.isBarcodeSelected}">
+                    <div class="qm-dropdown-heading">
+                        {{ "label.customer.type.barcode.scan" | translate }}
+                    </div>
+                    <input class="qm-input-box__input" type="text" id='barcode' name='barcode'
+                        (keyup)="onBarcodeChange($event)">
+                    
+                </div>
+                <button class="qm-save-button qm-button qm-primary-button-disabled btn-wrap"
+                    [ngClass]="{'qm-primary-button-default':isButtonEnabled}"
+                    (click)="goToNext()">
+                    <span> {{'button_save_and_add'|translate}} </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
