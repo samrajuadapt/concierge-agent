@@ -18,4 +18,12 @@ export class CustomerTypeDispatchers {
     this.store.dispatch(new CustomActions.SaveCustomerType(customerType))
   }
 
+  saveCustomerCount(count: number) {
+    this.store.dispatch(new CustomActions.SetCustomerCount(count))
+  }
+
+  restCustomerType() {
+    this.store.dispatch(new CustomActions.ResetCustomerType)
+  }
+
 }

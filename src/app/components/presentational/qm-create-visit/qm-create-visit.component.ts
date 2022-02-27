@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ServicePointSelectors, ServiceSelectors, CustomerSelector, TimeslotDispatchers, CustomerTypeDispatchers,ErpBranchDispatcher,VariablesDispathers, CustomerDispatchers, EmiratesIdDispatchers
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { ServicePointSelectors, ServiceSelectors, CustomerSelector, TimeslotDispatchers, CustomerTypeDispatchers, ErpBranchDispatcher, VariablesDispathers, CustomerDispatchers, EmiratesIdDispatchers, CustomerTypeSelectors
  } from 'src/store/services';
 import { Subscription } from 'rxjs';
 import { FLOW_TYPE } from '../../../../util/flow-state';
 import { IService } from '../../../../models/IService';
 import { ICustomer } from '../../../../models/ICustomer';
 import { LocalStorage, STORAGE_SUB_KEY } from '../../../../util/local-storage';
+import { ICustomerType } from 'src/models/ICustomerType';
 
 export enum CUSTOMER_SAVE_OPTION {
   DB = 'db',
@@ -17,25 +18,29 @@ export enum CUSTOMER_SAVE_OPTION {
   templateUrl: './qm-create-visit.component.html',
   styleUrls: ['./qm-create-visit.component.scss']
 })
-export class QmCreateVisitComponent implements OnInit {
+export class QmCreateVisitComponent implements OnInit, OnDestroy {
 
   @ViewChild('f', { static: true }) f: any;
   @ViewChild('pc') pc: any;
   @ViewChild('px', { static: true }) px: any;
+  @ViewChild('psg', { static: true }) psg: any;
 
   private subscriptions: Subscription = new Subscription();
-  private _isFlowSkip: boolean = false;
+  private _isFlowSkip = false;
   isCustomerFlowHidden: boolean;
   flowType = FLOW_TYPE.CREATE_VISIT;
   selectedServices: IService[];
   currentCustomer: ICustomer;
   isCustomerStoreDB: boolean;
 
+  currentCustomerType:ICustomerType
+  currentCustomerCount:number
+
   get isFlowSkip(): boolean {
     return this.localStorage.getSettingForKey(STORAGE_SUB_KEY.CUSTOMER_SKIP);
   }
 
-  isCustomerHeaderVisible: boolean = false;
+  isCustomerHeaderVisible = false;
 
   constructor(
     private servicePointSelectors: ServicePointSelectors,
@@ -43,11 +48,12 @@ export class QmCreateVisitComponent implements OnInit {
     private customerSelectors: CustomerSelector,
     private localStorage: LocalStorage,
     private timeSlotDispatchers: TimeslotDispatchers,
-    private customerTypeDispatchers:CustomerTypeDispatchers,
-    private erpBranchDispatcher:ErpBranchDispatcher,
-    private variableDisaptcher:VariablesDispathers,
-    private customerDispatcher:CustomerDispatchers,
-    private emiratesIdDispatcher:EmiratesIdDispatchers
+    private customerTypeDispatchers: CustomerTypeDispatchers,
+    private erpBranchDispatcher: ErpBranchDispatcher,
+    private variableDisaptcher: VariablesDispathers,
+    private customerDispatcher: CustomerDispatchers,
+    private emiratesIdDispatcher: EmiratesIdDispatchers,
+    private customerTypeSelectors:CustomerTypeSelectors
   ) {
 
     const servicePointsSubscription = this.servicePointSelectors.uttParameters$.subscribe((params) => {
@@ -83,14 +89,23 @@ export class QmCreateVisitComponent implements OnInit {
       }
     });
     this.subscriptions.add(tempCustomerSubscription);
+
+    const customerTypeSubscriptions = this.customerTypeSelectors.currentCustomerType$.subscribe((customerType) => {
+      // console.log("MFC","Create Visit","Customer Type",customerType);
+      this.currentCustomerType = customerType
+    });
+    this.subscriptions.add(customerTypeSubscriptions);
+
   }
 
   ngOnInit() {
     this.emiratesIdDispatcher.resetEmirateId()
     this.customerDispatcher.resetCustomerCard()
-    this.customerTypeDispatchers.fetchCustomerType()
-    this.erpBranchDispatcher.fetchErpBranches()
-    this.variableDisaptcher.fetchVariables()
+
+    this.customerTypeDispatchers.restCustomerType()
+    this.customerTypeDispatchers.fetchCustomerType();
+    this.erpBranchDispatcher.fetchErpBranches();
+    this.variableDisaptcher.fetchVariables();
   }
 
   ngOnDestroy() {
@@ -103,10 +118,28 @@ export class QmCreateVisitComponent implements OnInit {
       if (!(this.isCustomerFlowHidden)) {
         this.isCustomerHeaderVisible = true;
       }
-    }
-    else {
+    } else {
       this.f.onFlowNext(this.pc);
     }
+  }
+  onVisitCreateComplete(){
+    if(this.currentCustomerType.id == 2){
+      // this.f.onFlowNext(this.psg);
+      this.checkCustomerCount()
+    }else{
+      this.f.onFlowExit(this.px,true);
+    }
+  }
+
+  checkCustomerCount(){
+    this.customerTypeSelectors.customerCount$.subscribe((c) => {
+      // console.log("MFC","Create Visit","count",c);
+      if(this.currentCustomerType.numberOfCustomer == c){
+        this.f.onFlowExit(this.px,true);
+      }else{
+        this.f.onFlowNext(this.psg);
+      }
+    }).unsubscribe();
   }
   // deselectTime(){
   //   this.timeSlotDispatchers.deselectTimeslot();

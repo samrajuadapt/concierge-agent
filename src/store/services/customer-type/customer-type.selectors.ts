@@ -17,6 +17,12 @@ const getCustomerType = createSelector(
     getCustomerTypeState,
     (state:ICustoemrTypeState)=>state.currentCustomerType
   );
+
+
+  const getCustomerCount = createSelector(
+    getCustomerTypeState,
+    (state:ICustoemrTypeState)=>state.customerCount
+  )
   
 
 @Injectable()
@@ -24,6 +30,7 @@ export class CustomerTypeSelectors {
   constructor(private store: Store<IAppState>) {}  
 
   customerType$ = this.store.select(getCustomerType)
+  customerCount$ = this.store.select(getCustomerCount)
   currentCustomerType$ = this.store.select(getCurrentCustomerType)
 
 }

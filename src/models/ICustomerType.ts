@@ -1,4 +1,4 @@
-export class ICustomerType{
+export interface ICustomerType{
     id?:number
     name?:string
     companyName?:string

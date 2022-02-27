@@ -23,7 +23,7 @@ export class QmCustomerTypeComponent implements OnInit {
   selectedErpBranch: IErpBranch
   viewStatus = { isCorporateSelected: false, isBarcodeSelected: false }
 
-  currentCustomerType: ICustomerType;
+  // currentCustomerType: ICustomerType;
   numberOfCustomer: any;
   barcode: any
 
@@ -52,7 +52,7 @@ export class QmCustomerTypeComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.initCustomerTypeForm()
+    // this.initCustomerTypeForm()
   }
 
   setDefault() {
@@ -85,10 +85,10 @@ export class QmCustomerTypeComponent implements OnInit {
 
   onCustomerTypeSelect(customerType: ICustomerType) {
     if (customerType != null) {
-      this.currentCustomerType = { id: customerType.id, name: customerType.name }
-      if (this.selectedCustomerType.id != customerType.id) {
-        this.selectedCustomerType = customerType;
-      }
+      this.selectedCustomerType = customerType//{ id: customerType.id, name: customerType.name }
+      // if (this.selectedCustomerType.id != customerType.id) {
+      //   this.selectedCustomerType = customerType;
+      // }
       if (customerType.id == 2) {
         // this.customDispatcher.fetchErpBranches()
         this.viewStatus.isCorporateSelected = true
@@ -108,6 +108,7 @@ export class QmCustomerTypeComponent implements OnInit {
 
   onCompanyTypeSelect(erpBranch: IErpBranch) {
     this.selectedErpBranch.name = erpBranch.name
+    this.selectedCustomerType.companyName = erpBranch.name
   }
   onNumberOfCustomerChange(event: any) {
     this.numberOfCustomer = event.target.value
@@ -121,13 +122,19 @@ export class QmCustomerTypeComponent implements OnInit {
 
   goToNext() {
     if (this.isButtonEnabled) {
-      this.currentCustomerType.numberOfCustomer = this.numberOfCustomer
-      this.customerTypeDispatcher.saveCustomerType(this.currentCustomerType)
-      this.barcodeDispatchers.saveBarcode({ value: this.barcode, requird: this.currentCustomerType.id == 3 })
+      this.selectedCustomerType.numberOfCustomer = this.numberOfCustomer
+      this.customerTypeDispatcher.saveCustomerType(this.selectedCustomerType)
+      this.barcodeDispatchers.saveBarcode({ value: this.barcode, requird: this.selectedCustomerType.id == 3 })
       this.onFlowNext.emit();
     }
   }
-  Donothing(event) {
+
+  collapseSiblingDropDowns(dd: any) {
+    dd.isExpanded = false;
+  }
+
+  /**
+   Donothing(event) {
     event.stopPropagation();
   }
   clearInputFeild(name) {
@@ -154,5 +161,6 @@ export class QmCustomerTypeComponent implements OnInit {
   keyDownFunction(event, visitSearchText: string) {
   
   }
+   */
 
 }

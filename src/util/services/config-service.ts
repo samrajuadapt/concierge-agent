@@ -45,4 +45,17 @@ export class ConfigServices{
     public getWebSocketUrl():string{
         return this.getConfig("qr_code_url")
     }
+
+    public getProVip(){
+        return this.getConfig("vip").pro
+    }
+    public getProCustomerVip(){
+        return this.getConfig("vip").pro_customer
+    }
+    public getWaitingServiceId(){
+        return this.getConfig("waiting_service_id")
+    }
+    public getProServiceIds(){
+        return this.getConfig("pro_service_ids")
+    }
 }

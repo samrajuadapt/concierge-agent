@@ -5,7 +5,7 @@ import { CREATE_VISIT, CREATE_APPOINTMENT, ARRIVE_APPOINTMENT } from "./../../..
 import {
   ServicePointSelectors, CustomerSelector, ReserveSelectors, DataServiceError, TimeslotSelectors, BranchSelectors,
   ServiceSelectors, InfoMsgDispatchers, CustomerDispatchers, NoteSelectors, NoteDispatchers, CalendarBranchDispatchers,
-  CalendarServiceDispatchers, ArriveAppointmentSelectors, UserSelectors, CalendarBranchSelectors, CalendarServiceSelectors, SystemInfoSelectors, ReserveDispatchers, BarcodeSelectors
+  CalendarServiceDispatchers, ArriveAppointmentSelectors, UserSelectors, CalendarBranchSelectors, CalendarServiceSelectors, SystemInfoSelectors, ReserveDispatchers, BarcodeSelectors, CustomerTypeDispatchers, CustomerTypeSelectors, EmiratesIdDispatchers
 } from "../../../../store";
 import { IBranch } from './../../../../models/IBranch';
 import { IUTTParameter } from "../../../../models/IUTTParameter";
@@ -36,6 +36,8 @@ import { GlobalErrorHandler } from "src/util/services/global-error-handler.servi
 import { BroadcastService } from "src/util/services/brodcast.service";
 import { BROADCAST } from "src/util/broadcast-state";
 import { IBarcode } from "src/models/IBarcode";
+import { ICustomerType } from "src/models/ICustomerType";
+import { ConfigServices } from "src/util/services/config-service";
 
 @Component({
   selector: "qm-checkout-view",
@@ -132,6 +134,11 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   VipButton3Focused: boolean;
 
   currentBarcode: IBarcode
+  currentCustomerType: ICustomerType
+
+  corpCustomerCount: number = 0
+  proVisit: any;
+  waitingVisits: any[] = [];
 
   constructor(
     private servicePointSelectors: ServicePointSelectors,
@@ -163,7 +170,11 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     private reserveDispatchers: ReserveDispatchers,
     private errorHandler: GlobalErrorHandler,
     private barcodeSelectors: BarcodeSelectors,
-    private broadcast: BroadcastService
+    private broadcast: BroadcastService,
+    private customerTypeDipatchers: CustomerTypeDispatchers,
+    private customerTypeSelectors: CustomerTypeSelectors,
+    private emiratesIdDispatcher: EmiratesIdDispatchers,
+    private configService: ConfigServices
   ) {
     this.userDirection$ = this.userSelectors.userDirection$;
 
@@ -249,6 +260,12 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
         this.genarateAppointmentData();
       }
     });
+
+    const customerTypeSubscription = this.customerTypeSelectors.currentCustomerType$.subscribe(customerType => {
+      // console.log("MFC", "Visit Checkout", "Customer Type", customerType);
+      this.currentCustomerType = customerType
+    })
+    this.subscriptions.add(customerTypeSubscription)
 
     const userLocaleSubscription = this.userSelectors.userLocale$.subscribe(ul => this.userLocale = ul);
     this.subscriptions.add(userLocaleSubscription);
@@ -352,8 +369,6 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     const broadcastSubscriptions = this.broadcast.subscribe(BROADCAST.BARCODE_UPDATE, isUpdated => {
       if (isUpdated) {
         this.barcodeSelectors.barcode$.subscribe(barcode => {
-          console.log("Barcode",barcode);
-          
           this.currentBarcode = barcode;
         }).unsubscribe()
       }
@@ -563,6 +578,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     }
 
   }
+
   onPrintWristBand() {
     this.printWristBandSelected = !this.printWristBandSelected
   }
@@ -780,15 +796,17 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   }
 
   setCreateVisit() {
+    this.setVipforCorporateCustomer()
     this.loading = true;
     this.spService.createVisitWithBarcode(this.selectedBranch, this.selectedServicePoint, this.selectedServices, this.noteTextStr, this.currentBarcode, this.selectedVIPLevel, this.selectedCustomer, this.customerSms, this.ticketSelected, this.tempCustomer, this.getNotificationType()).subscribe((result) => {
       this.saveFrequentService();
       this.queueService.fetechQueueInfo();
+      this.waitingVisits.push(result)
       if (this.printWristBandSelected) {
         this.printWristBand(result)
       } else {
         this.loading = false;
-        this.showSuccessMessage(result);
+        this.showVisitCard(result);
         this.onFlowExit.emit();
       }
     }, error => {
@@ -797,11 +815,11 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
         this.handleTimeoutError(err, 'visit_create_fail');
       } else {
         this.loading = false;
+        this.resetCustomer()
         this.showErrorMessage(error);
         this.saveFrequentService();
+
       }
-
-
     })
   }
 
@@ -837,15 +855,59 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.spService.printWristband(this.selectedCustomer.cardNumber, visit.id, visit.ticketId, this.noteTextStr).subscribe((result) => {
       this.loading = false;
-      this.showSuccessMessage(visit);
+      this.showVisitCard(visit)
       this.onFlowExit.emit();
     }, error => {
       this.loading = false;
-      this.showSuccessMessage(visit);
+      this.showVisitCard(visit)
       this.showErrorMessage(error);
       this.saveFrequentService();
       this.onFlowExit.emit()
     })
+  }
+
+  showVisitCard(visit: any) {
+    // console.log("MFC", "Checkout", "corporate", this.currentCustomerType.id != 2);
+    if (this.currentCustomerType.id != 2) {
+      this.showSuccessMessage(visit);
+    } else {
+      if (this.corpCustomerCount == 0) {
+        this.proVisit = visit
+        this.broadcast.boradcast(BROADCAST.PRO_VISIT_CREATED,true)
+      } else if (this.currentCustomerType.numberOfCustomer == this.corpCustomerCount) {
+        this.endWaitingVisits()
+        this.showSuccessMessage(this.proVisit);
+      }
+      this.customerTypeDipatchers.saveCustomerCount(this.corpCustomerCount)
+      this.corpCustomerCount++
+    }
+    this.resetCustomer()
+  }
+
+  resetCustomer() {
+    this.emiratesIdDispatcher.resetEmirateId();
+    this.customerDispatcher.resetCustomerCard();
+    this.customerDispatcher.resetCurrentCustomer()
+    this.customerDispatcher.resetTempCustomer()
+  }
+
+  endWaitingVisits() {
+    this.waitingVisits.forEach(visit => {
+      this.spService.cherryPickVisit(this.selectedBranch.id, this.selectedServicePoint.id, visit.id).subscribe((result) => {
+        // console.log("MFC", "Visit Removed from waiting", visit.id, visit.ticketId);
+      })
+    })
+  }
+
+  setVipforCorporateCustomer() {
+    if (this.currentCustomerType.id == 2) {
+      if (this.corpCustomerCount == 0) {
+        this.selectedVIPLevel = this.configService.getProVip()
+      } else {
+        this.selectedVIPLevel = this.configService.getProCustomerVip()
+      }
+    }
+
   }
 
   showSuccessMessage(result: any) {
@@ -1188,7 +1250,7 @@ export class QmCheckoutViewComponent implements OnInit, OnDestroy {
   ButtonSelectedByUtt() {
     switch (this.flowType) {
       case FLOW_TYPE.CREATE_APPOINTMENT:
-        
+
         if (this.emailActionEnabled && !this.smsActionEnabled && !this.isNoNotificationEnabled) {
           this.onEmailSelected();
         } else if (!this.emailActionEnabled && this.smsActionEnabled && !this.isNoNotificationEnabled) {

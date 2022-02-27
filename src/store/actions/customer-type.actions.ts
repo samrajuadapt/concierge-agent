@@ -8,6 +8,8 @@ export const FETCH_CUSTOMER_TYPE_SUCCESS = '[CustomerType] FETCH_CUSTOMER_TYPE_S
 export const SAVE_CUSTOMER_TYPE = '[CustomerType] SAVE_CUSTOMER_TYPE';
 export const RESET_CUSTOMER_TYPE = '[CustomerType] RESET_CUSTOMER_TYPE';
 
+export const SET_CUSTOMER_COUNT = '[CustomerType] SET_CUSTOMER_COUNT';
+
 export class FetchCustomerType implements Action {
     readonly type = FETCH_CUSTOMER_TYPE;
 }
@@ -27,6 +29,11 @@ export class SaveCustomerType implements Action {
     constructor(public payload: ICustomerType) { }
 }
 
+export class SetCustomerCount implements Action {
+    readonly type = SET_CUSTOMER_COUNT;
+    constructor(public payload: number) { }
+}
+
 export class ResetCustomerType implements Action {
     readonly type = RESET_CUSTOMER_TYPE;
 }
@@ -36,4 +43,5 @@ export type AllCustomerTypeActions = FetchCustomerType
     | FetchCustomerTypeSuccess
     | FetchCustomerTypeFail
     | SaveCustomerType
+    | SetCustomerCount
     | ResetCustomerType;

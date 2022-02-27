@@ -44,7 +44,8 @@
       <qm-flow-panel-title>{{ 'label.confirm' | translate}}</qm-flow-panel-title>
     </qm-flow-panel-header>
     <qm-flow-panel-content>
-      <qm-checkout-view [flowType]="flowType" (goToPanelByIndex)="f.goToPanelByIndex($event)" (onFlowExit)="f.onFlowExit(px, true)"></qm-checkout-view>
+      <!-- <qm-checkout-view [flowType]="flowType" (goToPanelByIndex)="f.goToPanelByIndex($event)" (onFlowExit)="f.onFlowExit(px, true)"></qm-checkout-view> -->
+      <qm-checkout-view [flowType]="flowType" (goToPanelByIndex)="f.goToPanelByIndex($event)" (onFlowExit)="onVisitCreateComplete()"></qm-checkout-view>
     </qm-flow-panel-content>
   </qm-flow-panel>
 </qm-flow>

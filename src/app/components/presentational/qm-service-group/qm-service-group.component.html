@@ -6,20 +6,17 @@
         </div>
         <div class="qm-profile " dir="{{userDirection$ | async}}">
             <div class="qm-profile-content">
+ 
                 <div class="qm-check-box-content">
                     <div class="qm-right" *ngFor="let mainCat of mainCategory; let mi = index">
                         <div class="qm-use-as-default">
                             <label for="qm-checkbox" class="qm-checkbox-label">
                                 <div class="qm-checkbox__selector">
-                                    <input
-                                    class="styled-checkbox qm-tab" 
-                                    type="checkbox" 
-                                    [name]="mainCat" 
-                                    [value]="mainCat" 
-                                    [(checked)]="mainItem[mi] == mainCate" 
-                                    [(ngModel)]="mainItem[mi]">
+                                    <input class="styled-checkbox qm-tab" type="checkbox" [name]="mainCat"
+                                        [value]="mainCat" [(checked)]="mainItem[mi] == mainCate"
+                                        [(ngModel)]="mainItem[mi]">
                                     <label class="qm-checkbox__selector-icon-text"
-                                    (click)="onMainCategoryClick(mainCat,mi)">{{mainCat}}</label>
+                                        (click)="onMainCategoryClick(mainCat,mi)">{{mainCat}}</label>
                                 </div>
                             </label>
                         </div>
@@ -28,13 +25,10 @@
                                 <div class="qm-use-as-default">
                                     <label for="qm-checkbox" class="qm-checkbox-label">
                                         <div class="qm-checkbox__selector">
-                                            <input id="qm-sub-category" 
-                                            class="styled-checkbox qm-tab" 
-                                            type="checkbox"  
-                                            [(checked)]="itemSub.selected" 
-                                            [disabled]="itemSub.disabled">
-                                            <label class="qm-checkbox__selector-icon-text" 
-                                            (click)="onSubCategoryClick(mainCat,si,sj)"> {{ itemSub.name }}</label>
+                                            <input id="qm-sub-category" class="styled-checkbox qm-tab" type="checkbox"
+                                                [(checked)]="itemSub.selected" [disabled]="itemSub.disabled">
+                                            <label class="qm-checkbox__selector-icon-text"
+                                                (click)="onSubCategoryClick(mainCat,si,sj)"> {{ itemSub.name }}</label>
                                         </div>
                                     </label>
                                 </div>
@@ -42,12 +36,13 @@
                         </div>
                     </div>
                 </div>
-                
-                <button class="qm-save-button qm-button qm-primary-button-default btn-wrap" (click)="onSaveAndAddClick()">
+
+                <button class="qm-save-button qm-button qm-primary-button-default btn-wrap"
+                    (click)="onSaveAndAddClick()">
                     <span> {{'button_save_and_add'|translate}} </span>
                 </button>
             </div>
         </div>
-        
+
     </div>
 </div>

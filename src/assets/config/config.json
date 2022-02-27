@@ -23,11 +23,26 @@
         "value":"ws://localhost:8080/QRCodeWebSocketServer/qrcodescanner",
         "description":"Url for QR code scanning"
     },
+    "waiting_service_id":{
+        "value": 34,
+        "description": "Waiting service id for corporate customer to wait in virtual queue "
+    },
+    "pro_service_ids":{
+        "value":[21,26],
+        "description":"Only the above services will be added to the PRO visit of corporate"
+    },
+    "vip":{
+        "value":{
+            "pro":"VIP level 2",
+            "pro_customer":"VIP level 1"
+        },
+        "description":"VIP level for Corporate customer and PRO, if want to remove VIP Level replace the value with NONE"
+    },
     "customerType": {
         "value": [
             {
                 "id": 1,
-                "name": "Individual"
+                "name": "Normal"
             },
             {
                 "id": 2,

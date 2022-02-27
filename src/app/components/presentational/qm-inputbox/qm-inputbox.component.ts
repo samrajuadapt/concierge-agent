@@ -1,7 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { AutoClose } from '../../../../util/services/autoclose.service';
-import { UserSelectors, CustomerDispatchers, CustomerDataService, CustomerSelector, ServicePointSelectors, SystemInfoSelectors, BarcodeSelectors, EmiratesIdDispatchers, EmiratesIdSelectors, BarcodeDispatchers } from '../../../../store';
+import { UserSelectors, CustomerDispatchers, CustomerDataService, CustomerSelector, ServicePointSelectors, SystemInfoSelectors, BarcodeSelectors, EmiratesIdDispatchers, EmiratesIdSelectors, BarcodeDispatchers, CustomerTypeDispatchers } from '../../../../store';
 import { FormGroup, FormControl, FormBuilder, FormArray, FormGroupDirective, Validators, AbstractControl, } from '@angular/forms';
 import { ICustomer } from '../../../../models/ICustomer';
 import { first } from '../../../../../node_modules/rxjs/operators';
@@ -27,8 +27,10 @@ import { WebsocketService } from 'src/util/services/websocket.service';
   templateUrl: './qm-inputbox.component.html',
   styleUrls: ['./qm-inputbox.component.scss']
 })
-export class QmInputboxComponent implements OnInit {
+export class QmInputboxComponent implements OnInit,OnDestroy {
+  
   @Input() flowType: FLOW_TYPE;
+  @ViewChild('imgProfile', { static: true }) imgProfile: any;
   customerCreateForm: FormGroup;
   countrycode: string;
   dobRequired: boolean;
@@ -109,13 +111,14 @@ export class QmInputboxComponent implements OnInit {
     public LanguageSelectors: LanguageSelectors,
     public languageDispatchers: LanguageDispatchers,
     public systemInfoSelectors: SystemInfoSelectors,
-    private barcodeSelectors:BarcodeSelectors,
-    private barcodeDispatchers:BarcodeDispatchers,
-    private broadcast:BroadcastService,
-    private emiratesIdDispatchers:EmiratesIdDispatchers,
-    private emiratesIdSelectors:EmiratesIdSelectors,
-    private configService:ConfigServices,
-    private websocket:WebsocketService
+    private barcodeSelectors: BarcodeSelectors,
+    private barcodeDispatchers: BarcodeDispatchers,
+    private broadcast: BroadcastService,
+    private emiratesIdDispatchers: EmiratesIdDispatchers,
+    private emiratesIdSelectors: EmiratesIdSelectors,
+    private configService: ConfigServices,
+    private websocket: WebsocketService,
+    private customerTypeDispatchers: CustomerTypeDispatchers
   ) {
     // this.editCustomer$ = this.customerSelectors.editCustomer$;
     this.userDirection$ = this.userSelectors.userDirection$;
@@ -124,8 +127,8 @@ export class QmInputboxComponent implements OnInit {
 
   ngOnInit() {
     // get country code
-    const broadcastSubscriptions = this.broadcast.subscribe(BROADCAST.BARCODE_UPDATE,isUpdated=>{
-      if(isUpdated){
+    const broadcastSubscriptions = this.broadcast.subscribe(BROADCAST.BARCODE_UPDATE, isUpdated => {
+      if (isUpdated) {
         this.barcodeSelectors.barcode$.subscribe(barcode => {
           this.currentBarcode = barcode;
           this.barcodeRequired = this.currentBarcode.requird
@@ -171,9 +174,9 @@ export class QmInputboxComponent implements OnInit {
       if (this.currentCustomer) {
         const dob: any = this.currentCustomer.properties.dateOfBirth;
         this.date = this.formatDate(
-          dob.substring(8,10),
-          parseInt(dob.substring(5,7)) - 1,
-          dob.substring(0,4)
+          dob.substring(8, 10),
+          parseInt(dob.substring(5, 7)) - 1,
+          dob.substring(0, 4)
         );
 
 
@@ -196,7 +199,7 @@ export class QmInputboxComponent implements OnInit {
           firstName: '',
           lastName: '',
           phone: this.countrycode,
-          card:'',
+          card: '',
           email: '',
           dateOfBirth: {
             month: null,
@@ -215,14 +218,20 @@ export class QmInputboxComponent implements OnInit {
     this.subscriptions.add(editModeSubscription);
 
     const eidCustomerSubscription = this.emiratesIdSelectors.emiratesIdCustomer$.subscribe(eidCustomer => {
+      // console.log("MFC","EID",eidCustomer);
       if (eidCustomer.cardNumber != undefined) {
         this.currentEidCustomer = eidCustomer
         this.customerDispatchers.fetchCustomersByCard(eidCustomer.cardNumber)
+      }else{
+        this.profileImage = USER_IMG
+        this.currentCustomer = null;
+        this.clearCustomerForm();
       }
     })
     this.subscriptions.add(eidCustomerSubscription)
 
     const searchEidCustomerSubscriptions = this.customerSelectors.cardCustomer$.subscribe(customers => {
+      // console.log("MFC","CARD",customers);
       if (customers.length > 0) {
         this.isCustomerFromCard = true
         this.currentCustomer = customers[0]
@@ -237,17 +246,17 @@ export class QmInputboxComponent implements OnInit {
     const websocketsubscriptions = this.websocket.connect(this.configService.getWebSocketUrl()).subscribe(
       (response: MessageEvent) => {
         let data = JSON.parse(response.data);
-        console.log("websocket data => "+ data);
+        console.log("websocket data => " + data);
         let splitData = data.split("\n");
 
-        console.log(splitData);
+        // console.log(splitData);
         let firstLine = splitData[0].split(" ");
         let secondLine = splitData[1].split(":");
         let thirdLine = splitData[2].split(":");
         let fourthLine = splitData[3].split(":");
         let fifthLine = splitData[4].split(":");
         let sixthLine = splitData[5].split(":");
-      
+
         let firstName = firstLine[0];
         let lastName = firstLine[firstLine.length - 1];
         let emiratesId = secondLine[1];
@@ -291,8 +300,8 @@ export class QmInputboxComponent implements OnInit {
       lastName: new FormControl('', Validators.required, whiteSpaceValidator),
       phone: new FormControl(this.countrycode, phoneValidators),
       email: new FormControl('', emailValidators),
-      barcode: new FormControl('',Validators.required, whiteSpaceValidator),
-      card: new FormControl('',Validators.required, whiteSpaceValidator),
+      barcode: new FormControl('', Validators.required, whiteSpaceValidator),
+      card: new FormControl('', Validators.required, whiteSpaceValidator),
       dateOfBirth: this.fb.group(
         {
           month: [null, monthValidators],
@@ -379,7 +388,6 @@ export class QmInputboxComponent implements OnInit {
     if (this.customerCreateForm !== undefined) {
       this.customerCreateForm.markAsPristine();
       this.customerCreateForm.controls.dateOfBirth.markAsPristine();
-      this.profileImage = USER_IMG
 
       this.customerCreateForm.patchValue({
         firstName: '',
@@ -387,7 +395,7 @@ export class QmInputboxComponent implements OnInit {
         phone: this.countrycode,
         email: '',
         barcode: '',
-        card:'',
+        card: '',
         dateOfBirth: {
           month: null,
           day: '',
@@ -427,7 +435,7 @@ export class QmInputboxComponent implements OnInit {
     const customerSave: ICustomer = {
       firstName: this.customerCreateForm.value.firstName.trim(),
       lastName: this.customerCreateForm.value.lastName.trim(),
-      cardNumber:this.customerCreateForm.value.card.trim(),
+      cardNumber: this.customerCreateForm.value.card.trim(),
       properties: this.customerCreateForm.value.language
         ? {
           phoneNumber: this.customerCreateForm.value.phone.trim(),
@@ -478,7 +486,7 @@ export class QmInputboxComponent implements OnInit {
     let errors = null;
     if (control.value) {
 
-    
+
       // invalid date check for leap year
       if (control.value.year && control.value.month && control.value.day) {
         const d = new Date(
@@ -580,7 +588,8 @@ export class QmInputboxComponent implements OnInit {
   update() {
     this.currentBarcode.value = this.customerCreateForm.value.barcode
     this.barcodeDispatchers.saveBarcode(this.currentBarcode)
-    this.broadcast.boradcast(BROADCAST.BARCODE_UPDATE,true)
+    this.broadcast.boradcast(BROADCAST.BARCODE_UPDATE, true)
+
     if (
       this.customerCreateForm.valid &&
       (this.currentCustomer.firstName != this.customerCreateForm.value.firstName ||
@@ -596,7 +605,7 @@ export class QmInputboxComponent implements OnInit {
     ) {
       this.accept();
     } else if (this.customerCreateForm.valid && this.customerCreateForm.dirty) {
-      if(this.isCustomerFromCard){
+      if (this.isCustomerFromCard) {
         this.customerDispatchers.selectCustomer(this.preparedCustomer());
       }
       this.onFlowNext.emit();
@@ -611,8 +620,8 @@ export class QmInputboxComponent implements OnInit {
       lastName: this.currentCustomer.lastName,
       phone: this.currentCustomer.properties.phoneNumber,
       email: this.currentCustomer.properties.email,
-      barcode:this.currentBarcode.value,
-      card:this.currentCustomer.cardNumber,
+      barcode: this.currentBarcode.value,
+      card: this.currentCustomer.cardNumber,
       dateOfBirth: {
         month: this.date.month ? this.date.month : null,
         day: this.date.day ? this.date.day : '',
@@ -687,7 +696,7 @@ export class QmInputboxComponent implements OnInit {
         lastName: this.currentCustomer.lastName,
         phone: this.currentCustomer.properties.phoneNumber,
         email: this.currentCustomer.properties.email,
-        card:this.currentCustomer.cardNumber,
+        card: this.currentCustomer.cardNumber,
         dateOfBirth: {
           month: this.date.month ? this.date.month : null,
           day: this.date.day ? this.date.day : '',
@@ -703,7 +712,7 @@ export class QmInputboxComponent implements OnInit {
         lastName: '',
         phone: this.countrycode,
         email: '',
-        card:'',
+        card: '',
         dateOfBirth: {
           month: null,
           day: '',

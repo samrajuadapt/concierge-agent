@@ -22,7 +22,8 @@
                       <div class="qm-selected-box__text">
                         {{ service.name && service.name.length > 0 ? service.name : service.internalName }}
                       </div>
-                      <div class="qm-selected-box__visitor-container" *ngIf="flowType === 'CREATE_APPOINTMENT' && servicewiseCustomersEnabled">
+                      <div class="qm-selected-box__visitor-container"
+                        *ngIf="flowType === 'CREATE_APPOINTMENT' && servicewiseCustomersEnabled">
                         <i aria-hidden="true" class="icon-customer visior-icon"></i>
                         <span class="qm-selected-box__visitor-number">{{service.adult}}</span>
                         <i aria-hidden="true" class="icon-child visior-icon"></i>
@@ -133,7 +134,8 @@
                   class="qm-service-list__item qm-list__item"
                   [ngClass]="{'qm-service-list__item--selected, qm-list__item--selected': false}">
 
-                  <button (click)="onServiceSelectButtonPressed(service, true)" (keydown.enter)="onServiceSelectButtonPressed(service, true)"
+                  <button (click)="onServiceSelectButtonPressed(service, true)"
+                    (keydown.enter)="onServiceSelectButtonPressed(service, true)"
                     (keydown.space)="onServiceSelectButtonPressed(service, true)" id="{{i}}-frq-serv-btn"
                     [attr.tabindex]=" i==0 ? 0 : -1" (keydown.arrowdown)="onFreqServiceDownButttonPressed(i)"
                     (keydown.arrowup)="onFreqServiceUpButttonPressed(i)"
@@ -243,7 +245,8 @@
                       (keydown.arrowup)="onServiceUpButttonPressed(j)"
                       (keydown.arrowright)="onServiceRightButttonPressed(j)"
                       (keydown.arrowleft)="onServiceLeftButttonPressed(j)"
-                      (keydown.enter)="onServiceSelectButtonPressed(service, true)" (keydown.space)="onServiceSelectButtonPressed(service, true)"
+                      (keydown.enter)="onServiceSelectButtonPressed(service, true)"
+                      (keydown.space)="onServiceSelectButtonPressed(service, true)"
                       (click)="onServiceSelectButtonPressed(service, true)" [ngClass]="{'qm-outline':service.showInfo}">
                       <span class="qm-list__item--label" [ngClass]="{'qm-highlight-text': service.showInfo}"
                         [innerHtml]="( service.name && service.name.length > 0 ? service.name : service.internalName) | qmhighlight: searchText">

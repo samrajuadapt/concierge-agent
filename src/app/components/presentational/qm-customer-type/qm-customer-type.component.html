@@ -10,7 +10,7 @@
                     <div class="qm-dropdown-heading">
                         {{ "label.customer.type.customer" | translate }}
                     </div>
-                    <qm-drop-down #ct class="qm-branch-dd" [searchPlaceHolder]="'label.customer.type.customer'"
+                    <qm-drop-down #ct (onExpand)="collapseSiblingDropDowns(cb)" class="qm-branch-dd" [searchPlaceHolder]="'label.customer.type.customer'"
                         [items]="customerTypes" itemType="customerType" [caption]="selectedCustomerType?.name"
                         [isItemSelected]="selectedCustomerType?.id > -1" labelProperty="name" [isTopView]="true"
                         (itemClick)="onCustomerTypeSelect($event)">
@@ -21,7 +21,7 @@
                     <div class="qm-dropdown-heading">
                         {{ "label.customer.type.company" | translate }}
                     </div>
-                    <qm-drop-down #cb class="qm-branch-dd" [searchPlaceHolder]="'label.branch.search'"
+                    <qm-drop-down #cb (onExpand)="collapseSiblingDropDowns(ct)" class="qm-branch-dd" [searchPlaceHolder]="'label.branch.search'"
                         [items]="erpBranches" itemType="erpBranch" [caption]="selectedErpBranch?.name"
                         [isItemSelected]="selectedErpBranch?.id > -1" labelProperty="name" [isTopView]="true"
                         (itemClick)="onCompanyTypeSelect($event)">
